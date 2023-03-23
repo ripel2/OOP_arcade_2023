@@ -1,0 +1,3 @@
+[submodule "ArcadeShared"]
+	path = ArcadeShared
+	url = git@github.com:ripel2/ArcadeShared.git

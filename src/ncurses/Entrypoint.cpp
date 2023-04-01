@@ -1,6 +1,9 @@
 #include <iostream>
 
-std::string entrypoint()
+#include "IGraphicModule.hpp"
+#include "AGraphicModule.hpp"
+
+extern "C" std::unique_ptr<acd::IGraphicModule> graphicEntryPoint()
 {
-    return "Hello World!";
+    return nullptr;
 }

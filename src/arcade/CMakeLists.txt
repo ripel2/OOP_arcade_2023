@@ -1,6 +1,6 @@
 file(GLOB SRC_ARCADE *.cpp)
 
-add_executable(arcade ${SRC_ARCADE})
+add_executable(arcade ${SRC_ARCADE} ${SRC_SHARED})
 
 target_compile_options(arcade PRIVATE -fno-gnu-unique)
 

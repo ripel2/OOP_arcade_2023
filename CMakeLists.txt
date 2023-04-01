@@ -8,6 +8,8 @@ include_directories(ArcadeShared)
 
 file(GLOB SRC_SHARED src/*.cpp)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-gnu-unique")
+
 add_subdirectory(src/arcade)
 add_subdirectory(src/ncurses)
 add_subdirectory(src/sfml)

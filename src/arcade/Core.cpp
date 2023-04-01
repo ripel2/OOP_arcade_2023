@@ -9,6 +9,8 @@
 
 acd::Core::Core(const char *lib)
 {
+    if (!std::filesystem::exists(lib))
+        throw CoreException("library " + std::string(lib) + " does not exist");
     _startLib = getGraphicLib(lib);
     _graphicLibs = std::map<std::string, std::unique_ptr<DLLoader<IGraphicModule>>>();
     _gameLibs = std::map<std::string, std::unique_ptr<DLLoader<IGameModule>>>();

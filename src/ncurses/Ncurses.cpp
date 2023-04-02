@@ -52,6 +52,7 @@ void acd::Ncurses::getInputs()
         {KEY_LEFT, acd::KEY__LEFT},
         {KEY_RIGHT, acd::KEY__RIGHT},
         {KEY_ENTER, acd::KEY__ENTER},
+        {'\n', acd::KEY__ENTER},
         {27, acd::KEY_ESCAPE},
         {32, acd::KEY_SPACE},
         {97, acd::KEY_A},
@@ -106,8 +107,8 @@ void acd::Ncurses::display(GameMap const &map)
         return;
     }
     erase();
-    for (std::size_t y = 0; y < size.second; y++) {
-        for (std::size_t x = 0; x < size.first; x++) {
+    for (std::size_t y = 0; y < size.first; y++) {
+        for (std::size_t x = 0; x < size.second; x++) {
             if (grid.find({x, y}) != grid.end()) {
                 acd::IBlock &block = grid.at({x, y}).get();
                 std::size_t posX = x;

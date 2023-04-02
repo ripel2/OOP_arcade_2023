@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(ArcadeShared)
 
-file(GLOB SRC_SHARED src/*.cpp)
+file(GLOB SRC_SHARED ArcadeShared/*.cpp)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-gnu-unique")
 
 add_subdirectory(src/arcade)
 add_subdirectory(src/ncurses)

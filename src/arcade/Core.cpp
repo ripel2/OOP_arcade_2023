@@ -67,11 +67,8 @@ std::unique_ptr<acd::DLLoader<acd::IGameModule>> acd::Core::getGameLib(const std
     }
 }
 
-void acd::Core::startMenu()
+void acd::Core::setupMenu(acd::Menu &menu)
 {
-    std::unique_ptr<IGraphicModule> lib = std::move(_startLib->getInstance());
-    acd::Menu menu;
-
     std::vector<std::string> graphicLibsPaths;
     for (const auto &lib : _graphicLibs)
         graphicLibsPaths.push_back(lib.first);
@@ -80,6 +77,14 @@ void acd::Core::startMenu()
     for (const auto &lib : _gameLibs)
         gameLibsPaths.push_back(lib.first);
     menu.setAvailableGameLibs(gameLibsPaths);
+}
+
+void acd::Core::startMenu()
+{
+    std::unique_ptr<IGraphicModule> lib = std::move(_startLib->getInstance());
+    acd::Menu menu;
+
+    setupMenu(menu);
     while (!menu.isReady()) {
         lib->getInputs();
         acd::Input input = lib->getLatestInput();
@@ -89,12 +94,12 @@ void acd::Core::startMenu()
         acd::updateType_t update = menu.update(input);
         lib->display(menu.getMap());
     }
-    if (!menu.isReady())
-        return;
-    _isReady = true;
-    std::cerr << "Graphic lib: " << menu.getSelectedGraphicLib() << std::endl;
-    std::cerr << "Game lib: " << menu.getSelectedGameLib() << std::endl;
-    std::cerr << "Username: " << menu.getUsername() << std::endl;
+    if (menu.isReady()) {
+        _isReady = true;
+        _currentGraphicLib = menu.getSelectedGraphicLib();
+        _currentGameLib = menu.getSelectedGameLib();
+        _username = menu.getUsername();
+    }
 }
 
 bool acd::Core::isReady() const
@@ -105,4 +110,7 @@ bool acd::Core::isReady() const
 void acd::Core::startGame()
 {
     std::cout << "Menu successfully returned is ready" << std::endl;
+    std::cout << _currentGraphicLib << std::endl;
+    std::cout << _currentGameLib << std::endl;
+    std::cout << _username << std::endl;
 }

@@ -59,6 +59,9 @@ namespace acd {
             std::map<std::string, std::unique_ptr<DLLoader<IGraphicModule>>> _graphicLibs;
             std::map<std::string, std::unique_ptr<DLLoader<IGameModule>>> _gameLibs;
             bool _isReady;
+            std::string _currentGraphicLib;
+            std::string _currentGameLib;
+            std::string _username;
             /**
              * @brief Checks if the library is a graphic library and returns its
              * DLLoader if it is, else it throws an exception
@@ -69,5 +72,9 @@ namespace acd {
              * DLLoader if it is, else it throws an exception
             */
             std::unique_ptr<DLLoader<IGameModule>> getGameLib(const std::string &lib);
+            /**
+             * @brief Set the menu up
+            */
+            void setupMenu(acd::Menu &menu);
     };
 }

@@ -56,5 +56,6 @@ namespace acd {
             void addCharToUsername(Input latestInput);
             void _initTitleBlocks();
             void _initOptionBlocks();
+            void _initUsernameChars();
     };
 }

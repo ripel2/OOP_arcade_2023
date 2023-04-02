@@ -13,7 +13,7 @@ acd::Menu::Menu()
     _selectedGraphicLib(false), _selectedGameLib(false), _typedUsername(false), _map(24, 32)
 {
     for (std::size_t i = 0; i < 10; i++)
-        _username[i] = 'A';
+        _username[i] = ' ';
     _username[10] = '\0';
     _initTitleBlocks();
     _initOptionBlocks();
@@ -56,6 +56,21 @@ void acd::Menu::_initOptionBlocks()
         block.get()->setBackColor(Color::BLACK);
         block.get()->setColor(Color::WHITE);
         _map.setText("optionBlock" + std::to_string(c), *block.get());
+        _textBlocks.push_back(std::move(block));
+    }
+}
+
+void acd::Menu::_initUsernameChars()
+{
+    for (std::size_t c = 0; c < 13; c++) {
+        _map.removeText("optionBlock" + std::to_string(c));
+    }
+    for (std::size_t c = 0; c < sizeof(_username) - 1; c++) {
+        std::unique_ptr<ATextBlock> block = std::make_unique<ATextBlock>();
+        block.get()->setTextPosition(2 + c, 10);
+        block.get()->setBackColor(Color::BLACK);
+        block.get()->setColor(Color::WHITE);
+        _map.setText("usernameChar" + std::to_string(c), *block.get());
         _textBlocks.push_back(std::move(block));
     }
 }
@@ -146,7 +161,8 @@ void acd::Menu::addCharToUsername(acd::Input latestInput)
         { acd::Input::KEY_W, 'W' },
         { acd::Input::KEY_X, 'X' },
         { acd::Input::KEY_Y, 'Y' },
-        { acd::Input::KEY_Z, 'Z' }
+        { acd::Input::KEY_Z, 'Z' },
+        { acd::Input::KEY_SPACE, ' '}
     };
 
     if (dc.find(latestInput) == dc.end())
@@ -164,6 +180,7 @@ void acd::Menu::pressEnter()
         _selectedGameLib = true;
         _selectedGameLibPath = _availableGameLibs[_selectedGameLibIndex];
         _map.getText("titleBlock").setText("Enter your username:");
+        _initUsernameChars();
     } else if (!_typedUsername) {
         _typedUsername = true;
     }
@@ -174,18 +191,31 @@ void acd::Menu::updateMap()
     std::vector<std::string> &libs = !_selectedGraphicLib ? _availableGraphicLibs : _availableGameLibs;
     std::size_t &cursor = !_selectedGraphicLib ? _selectedGraphicLibIndex : _selectedGameLibIndex;
 
-    for (std::size_t c = 0; c < 13; c++) {
-        if (c == cursor) {
-            _map.getText("optionBlock" + std::to_string(c)).setColor(Color::BLACK);
-            _map.getText("optionBlock" + std::to_string(c)).setBackColor(Color::WHITE);
-        } else {
-            _map.getText("optionBlock" + std::to_string(c)).setColor(Color::WHITE);
-            _map.getText("optionBlock" + std::to_string(c)).setBackColor(Color::BLACK);
+    if (!_selectedGraphicLib || !_selectedGameLib) {
+        for (std::size_t c = 0; c < 13; c++) {
+            if (c == cursor) {
+                _map.getText("optionBlock" + std::to_string(c)).setColor(Color::BLACK);
+                _map.getText("optionBlock" + std::to_string(c)).setBackColor(Color::WHITE);
+            } else {
+                _map.getText("optionBlock" + std::to_string(c)).setColor(Color::WHITE);
+                _map.getText("optionBlock" + std::to_string(c)).setBackColor(Color::BLACK);
+            }
+            if (c < libs.size())
+                _map.getText("optionBlock" + std::to_string(c)).setText(libs[c]);
+            else
+                _map.getText("optionBlock" + std::to_string(c)).setText("");
         }
-        if (c < libs.size())
-            _map.getText("optionBlock" + std::to_string(c)).setText(libs[c]);
-        else
-            _map.getText("optionBlock" + std::to_string(c)).setText("");
+    } else {
+        for (std::size_t c = 0; c < sizeof(_username) - 1; c++) {
+            if (c == _usernameCursorIndex) {
+                _map.getText("usernameChar" + std::to_string(c)).setColor(Color::BLACK);
+                _map.getText("usernameChar" + std::to_string(c)).setBackColor(Color::WHITE);
+            } else {
+                _map.getText("usernameChar" + std::to_string(c)).setColor(Color::WHITE);
+                _map.getText("usernameChar" + std::to_string(c)).setBackColor(Color::BLACK);
+            }
+            _map.getText("usernameChar" + std::to_string(c)).setText(std::string(1, _username[c] == ' ' ? '_' : _username[c]));
+        }
     }
     setMap(_map);
 }
@@ -234,6 +264,7 @@ acd::updateType_t acd::Menu::update(acd::Input latestInput)
         case acd::Input::KEY_X:
         case acd::Input::KEY_Y:
         case acd::Input::KEY_Z:
+        case acd::Input::KEY_SPACE:
             addCharToUsername(latestInput);
         default:
             break;

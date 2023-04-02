@@ -20,13 +20,7 @@ acd::Ncurses::Ncurses()
     nodelay(stdscr, TRUE);
     curs_set(0);
     start_color();
-    init_pair(1, COLOR_RED, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(4, COLOR_BLUE, COLOR_BLACK);
-    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(6, COLOR_CYAN, COLOR_BLACK);
-    init_pair(7, COLOR_WHITE, COLOR_BLACK);
+    _initColors();
 }
 
 acd::Ncurses::~Ncurses()
@@ -87,7 +81,7 @@ void acd::Ncurses::display(GameMap const &map)
     std::map<std::pair<std::size_t, std::size_t>, std::reference_wrapper<acd::IBlock>> grid = map.getGrid();
     std::map<std::string, std::reference_wrapper<acd::ITextBlock>> texts = map.getTexts();
 
-    clear();
+    erase();
     for (std::size_t y = 0; y < size.second; y++) {
         for (std::size_t x = 0; x < size.first; x++) {
             if (grid.find({x, y}) != grid.end()) {
@@ -95,18 +89,26 @@ void acd::Ncurses::display(GameMap const &map)
                 std::size_t posX = x;
                 std::size_t posY = y;
                 char *nchars = block.getCharactersNcurses();
+                acd::Color foregroundColor = block.getForegroundColorNcurses();
+                acd::Color backgroundColor = block.getBackgroundColorNcurses();
 
-                mvprintw(posY, posX * 2, "%c%c", nchars[0], nchars[1]);
+                _attrOnColors(foregroundColor, backgroundColor);
+                mvaddch((int)posY, (int)posX * 2, nchars[0]);
+                mvaddch((int)posY, (int)posX * 2 + 1, nchars[1]);
+                _attrOffColors(foregroundColor, backgroundColor);
             }
         }
     }
     for (auto &text : texts) {
         std::pair<std::size_t, std::size_t> pos = text.second.get().getTextPosition();
         std::string str = text.second.get().getText();
+        acd::Color foregroundColor = text.second.get().getColor();
+        acd::Color backgroundColor = text.second.get().getBackColor();
 
-        mvprintw((int)pos.second, (int)pos.first * 2, str.c_str());
+        _attrOnColors(foregroundColor, backgroundColor);
+        mvaddstr((int)pos.second, (int)pos.first * 2, str.c_str());
+        _attrOffColors(foregroundColor, backgroundColor);
     }
-    timeout(50);
     refresh();
 }
 
@@ -123,4 +125,68 @@ const std::map<std::string, std::reference_wrapper<acd::IBlock>> &acd::Ncurses::
 acd::IBlock &acd::Ncurses::getRefBlock(const std::string &name) const
 {
     return _refBlocks.at(name);
+}
+
+void acd::Ncurses::_initColors()
+{
+    int color_pair_index = 1;
+    std::array<acd::Color, 8> colors = {
+        acd::Color::BLACK,
+        acd::Color::RED,
+        acd::Color::GREEN,
+        acd::Color::YELLOW,
+        acd::Color::BLUE,
+        acd::Color::MAGENTA,
+        acd::Color::CYAN,
+        acd::Color::WHITE
+    };
+    std::array<acd::Color, 8> brightColors = {
+        acd::Color::LIGHT_BLACK,
+        acd::Color::LIGHT_RED,
+        acd::Color::LIGHT_GREEN,
+        acd::Color::LIGHT_YELLOW,
+        acd::Color::LIGHT_BLUE,
+        acd::Color::LIGHT_MAGENTA,
+        acd::Color::LIGHT_CYAN,
+        acd::Color::LIGHT_WHITE
+    };
+
+    for (int fg_color = 0; fg_color < 8; fg_color++) {
+        for (int bg_color = 0; bg_color < 8; bg_color++) {
+            init_pair(color_pair_index, fg_color, bg_color);
+            _colorPairs[std::make_pair(colors[fg_color], colors[bg_color])] = std::make_pair(color_pair_index, false);
+            _colorPairs[std::make_pair(brightColors[fg_color], colors[bg_color])] = std::make_pair(color_pair_index, true);
+            _colorPairs[std::make_pair(colors[fg_color], brightColors[bg_color])] = std::make_pair(color_pair_index, false);
+            _colorPairs[std::make_pair(brightColors[fg_color], brightColors[bg_color])] = std::make_pair(color_pair_index, true);
+            color_pair_index++;
+        }
+    }
+}
+
+void acd::Ncurses::_attrOnColors(acd::Color foreColor, acd::Color backColor)
+{
+    std::pair<acd::Color, acd::Color> colors = std::make_pair(foreColor, backColor);
+
+    if (_colorPairs.find(colors) != _colorPairs.end()) {
+        std::pair<int, bool> colorPair = _colorPairs.at(colors);
+
+        attron(COLOR_PAIR(colorPair.first));
+        if (colorPair.second) {
+            attron(A_BOLD);
+        }
+    }
+}
+
+void acd::Ncurses::_attrOffColors(acd::Color foreColor, acd::Color backColor)
+{
+    std::pair<acd::Color, acd::Color> colors = std::make_pair(foreColor, backColor);
+
+    if (_colorPairs.find(colors) != _colorPairs.end()) {
+        std::pair<int, bool> colorPair = _colorPairs.at(colors);
+
+        attroff(COLOR_PAIR(colorPair.first));
+        if (colorPair.second) {
+            attroff(A_BOLD);
+        }
+    }
 }

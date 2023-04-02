@@ -37,5 +37,10 @@ namespace acd {
             IBlock &getRefBlock(const std::string &name) const override;
         private:
             std::map<std::string, std::reference_wrapper<IBlock>> _refBlocks;
+            // foreground color, background color, pair number, is bright
+            std::map<std::pair<acd::Color, acd::Color>, std::pair<int, bool>> _colorPairs;
+            void _initColors();
+            void _attrOnColors(acd::Color foreColor, acd::Color backColor);
+            void _attrOffColors(acd::Color foreColor, acd::Color backColor);
     };
 }

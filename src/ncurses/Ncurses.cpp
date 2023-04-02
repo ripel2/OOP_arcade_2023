@@ -28,6 +28,21 @@ acd::Ncurses::~Ncurses()
     endwin();
 }
 
+void acd::Ncurses::setRefBlocks(const std::map<std::string, std::reference_wrapper<acd::IBlock>> &refBlocks)
+{
+    _refBlocks = refBlocks;
+}
+
+const std::map<std::string, std::reference_wrapper<acd::IBlock>> &acd::Ncurses::getRefBlocks() const
+{
+    return _refBlocks;
+}
+
+acd::IBlock &acd::Ncurses::getRefBlock(const std::string &name) const
+{
+    return _refBlocks.at(name);
+}
+
 void acd::Ncurses::getInputs()
 {
     int ch = getch();
@@ -81,6 +96,15 @@ void acd::Ncurses::display(GameMap const &map)
     std::map<std::pair<std::size_t, std::size_t>, std::reference_wrapper<acd::IBlock>> grid = map.getGrid();
     std::map<std::string, std::reference_wrapper<acd::ITextBlock>> texts = map.getTexts();
 
+    if ((int)size.second > COLS / 2 || (int)size.first > LINES) {
+        erase();
+        mvprintw(0, 0, "== Window is too small ==");
+        mvprintw(2, 0, "Grid size %zu %zu", size.first, size.second);
+        mvprintw(3, 0, "Window size %d %d", LINES, COLS);
+        mvprintw(4, 0, "(eq to %d %d blocks)", LINES, COLS / 2);
+        refresh();
+        return;
+    }
     erase();
     for (std::size_t y = 0; y < size.second; y++) {
         for (std::size_t x = 0; x < size.first; x++) {
@@ -110,21 +134,6 @@ void acd::Ncurses::display(GameMap const &map)
         _attrOffColors(foregroundColor, backgroundColor);
     }
     refresh();
-}
-
-void acd::Ncurses::setRefBlocks(const std::map<std::string, std::reference_wrapper<acd::IBlock>> &refBlocks)
-{
-    _refBlocks = refBlocks;
-}
-
-const std::map<std::string, std::reference_wrapper<acd::IBlock>> &acd::Ncurses::getRefBlocks() const
-{
-    return _refBlocks;
-}
-
-acd::IBlock &acd::Ncurses::getRefBlock(const std::string &name) const
-{
-    return _refBlocks.at(name);
 }
 
 void acd::Ncurses::_initColors()

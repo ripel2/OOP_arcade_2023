@@ -27,7 +27,8 @@ int main(int ac, char **av)
         acd::Core core(av[1]);
         core.loadLibsFromFolder("./lib");
         core.startMenu();
-        core.startGame();
+        if (core.isReady())
+            core.startGame();
     } catch (const std::exception &e) {
         std::cerr << av[0] << ": " << e.what() << std::endl;
         return 84;

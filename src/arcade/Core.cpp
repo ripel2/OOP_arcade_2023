@@ -9,6 +9,7 @@
 
 acd::Core::Core(const char *lib)
 {
+    _isReady = false;
     if (!std::filesystem::exists(lib))
         throw CoreException("library " + std::string(lib) + " does not exist");
     _startLib = getGraphicLib(lib);
@@ -68,20 +69,40 @@ std::unique_ptr<acd::DLLoader<acd::IGameModule>> acd::Core::getGameLib(const std
 
 void acd::Core::startMenu()
 {
-    acd::GameMap map(24, 80);
-    size_t line = 0;
-
     std::unique_ptr<IGraphicModule> lib = std::move(_startLib->getInstance());
-    while (1) {
-        lib.get()->getInputs();
-        acd::Input input = lib.get()->getLatestInput();
-        if (input == acd::Input::KEY_ESCAPE)
+    acd::Menu menu;
+
+    std::vector<std::string> graphicLibsPaths;
+    for (const auto &lib : _graphicLibs)
+        graphicLibsPaths.push_back(lib.first);
+    menu.setAvailableGraphicLibs(graphicLibsPaths);
+    std::vector<std::string> gameLibsPaths;
+    for (const auto &lib : _gameLibs)
+        gameLibsPaths.push_back(lib.first);
+    menu.setAvailableGameLibs(gameLibsPaths);
+    while (!menu.isReady()) {
+        lib->getInputs();
+        acd::Input input = lib->getLatestInput();
+        if (input == acd::Input::KEY_ESCAPE) {
             break;
-        lib.get()->display(map);
+        }
+        acd::updateType_t update = menu.update(input);
+        lib->display(menu.getMap());
     }
+    if (!menu.isReady())
+        return;
+    _isReady = true;
+    std::cerr << "Graphic lib: " << menu.getSelectedGraphicLib() << std::endl;
+    std::cerr << "Game lib: " << menu.getSelectedGameLib() << std::endl;
+    std::cerr << "Username: " << menu.getUsername() << std::endl;
+}
+
+bool acd::Core::isReady() const
+{
+    return _isReady;
 }
 
 void acd::Core::startGame()
 {
-
+    std::cout << "Menu successfully returned is ready" << std::endl;
 }

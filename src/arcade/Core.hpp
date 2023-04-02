@@ -14,6 +14,7 @@
 #include "IGraphicModule.hpp"
 #include "IGameModule.hpp"
 #include "DLLoader.hpp"
+#include "Menu.hpp"
 
 namespace acd {
     class Core {
@@ -47,11 +48,17 @@ namespace acd {
              * @brief Starts the main loop
             */
             void startGame();
+            /**
+             * @brief Checks if the core is ready to start the game
+             * @return true if the core is ready, false otherwise
+            */
+            bool isReady() const;
         protected:
         private:
             std::unique_ptr<DLLoader<IGraphicModule>> _startLib;
             std::map<std::string, std::unique_ptr<DLLoader<IGraphicModule>>> _graphicLibs;
             std::map<std::string, std::unique_ptr<DLLoader<IGameModule>>> _gameLibs;
+            bool _isReady;
             /**
              * @brief Checks if the library is a graphic library and returns its
              * DLLoader if it is, else it throws an exception

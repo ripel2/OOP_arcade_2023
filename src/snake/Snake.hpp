@@ -31,7 +31,9 @@ namespace acd {
             bool _isPaused;
             int _direction;
             bool _isGameOver;
+            bool _movedOnce;
             std::chrono::time_point<std::chrono::system_clock> _lastUpdate;
             void _initSnake();
+            void _setGameOver();
     };
 }

@@ -8,7 +8,7 @@
 #include "Snake.hpp"
 
 acd::Snake::Snake()
-    : AGameModule(), _map(31, 31), _isPaused(false), _direction(0), _isGameOver(false), _lastUpdate(std::chrono::system_clock::now())
+    : AGameModule(), _map(31, 31), _isPaused(false), _direction(0), _isGameOver(false), _movedOnce(false), _lastUpdate(std::chrono::system_clock::now())
 {
     _isPaused = false;
     _blocks = std::vector<std::unique_ptr<ABlock>>();
@@ -35,6 +35,7 @@ acd::Snake::Snake()
 
 void acd::Snake::_initSnake()
 {
+    _map.removeText("gameOver");
     for (std::size_t x = 1; x < 30; x++)
         for (std::size_t y = 1; y < 30; y++)
             _map.removeBlock(x, y);
@@ -48,6 +49,18 @@ void acd::Snake::_initSnake()
         _map.setBlock(_snake[c].first, _snake[c].second, *_blocks[0].get());
     setScore(0);
     setMap(_map);
+}
+
+void acd::Snake::_setGameOver()
+{
+    std::unique_ptr<ATextBlock> gameOver = std::make_unique<ATextBlock>();
+    gameOver.get()->setText("GAME OVER");
+    gameOver.get()->setColor(Color::BLACK);
+    gameOver.get()->setBackColor(Color::RED);
+    gameOver.get()->setTextPosition(13, 15);
+    _map.setText("gameOver", *gameOver.get());
+    _textBlocks.push_back(std::move(gameOver));
+    _isGameOver = true;
 }
 
 acd::updateType_t acd::Snake::update(Input latestInput)
@@ -64,16 +77,28 @@ acd::updateType_t acd::Snake::update(Input latestInput)
         return acd::updateType_t::UPDATE_NONE;
     switch (latestInput) {
         case Input::KEY_S:
-            _direction = _direction == 2 ? 2 : 0;
+            if (_direction != 2 && _movedOnce) {
+                _direction = 0;
+                _movedOnce = false;
+            }
             break;
         case Input::KEY_D:
-            _direction = _direction == 3 ? 3 : 1;
+            if (_direction != 3 && _movedOnce) {
+                _direction = 1;
+                _movedOnce = false;
+            }
             break;
         case Input::KEY_Z:
-            _direction = _direction == 0 ? 0 : 2;
+            if (_direction != 0 && _movedOnce) {
+                _direction = 2;
+                _movedOnce = false;
+            }
             break;
         case Input::KEY_Q:
-            _direction = _direction == 1 ? 1 : 3;
+            if (_direction != 1 && _movedOnce) {
+                _direction = 3;
+                _movedOnce = false;
+            }
             break;
         default:
             break;
@@ -99,14 +124,15 @@ acd::updateType_t acd::Snake::update(Input latestInput)
             break;
     }
     _snake.pop_back();
+    _movedOnce = true;
     for (std::size_t c = 0; c < _snake.size(); c++) {
         if (_snake[c].first == 0 || _snake[c].first == 30 || _snake[c].second == 0 || _snake[c].second == 30) {
-            _isGameOver = true;
+            _setGameOver();
         } else {
             _map.setBlock(_snake[c].first, _snake[c].second, *_blocks[0].get());
             for (std::size_t c2 = c + 1; c2 < _snake.size(); c2++) {
                 if (_snake[c].first == _snake[c2].first && _snake[c].second == _snake[c2].second) {
-                    _isGameOver = true;
+                    _setGameOver();
                 }
             }
         }

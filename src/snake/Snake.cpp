@@ -44,12 +44,6 @@ void acd::Snake::_initSnake()
     _snake.push_back(std::pair<int, int>(15, 14));
     _snake.push_back(std::pair<int, int>(15, 13));
     _snake.push_back(std::pair<int, int>(15, 12));
-    _snake.push_back(std::pair<int, int>(15, 11));
-    _snake.push_back(std::pair<int, int>(15, 10));
-    _snake.push_back(std::pair<int, int>(15, 9));
-    _snake.push_back(std::pair<int, int>(15, 8));
-    _snake.push_back(std::pair<int, int>(15, 7));
-    _snake.push_back(std::pair<int, int>(15, 6));
     for (std::size_t c = 0; c < _snake.size(); c++)
         _map.setBlock(_snake[c].first, _snake[c].second, *_blocks[0].get());
     setScore(0);
@@ -110,6 +104,11 @@ acd::updateType_t acd::Snake::update(Input latestInput)
             _isGameOver = true;
         } else {
             _map.setBlock(_snake[c].first, _snake[c].second, *_blocks[0].get());
+            for (std::size_t c2 = c + 1; c2 < _snake.size(); c2++) {
+                if (_snake[c].first == _snake[c2].first && _snake[c].second == _snake[c2].second) {
+                    _isGameOver = true;
+                }
+            }
         }
     }
     setMap(_map);

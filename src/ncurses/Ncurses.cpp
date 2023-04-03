@@ -131,7 +131,7 @@ void acd::Ncurses::display(GameMap const &map)
         acd::Color backgroundColor = text.second.get().getBackColor();
 
         _attrOnColors(foregroundColor, backgroundColor);
-        mvaddstr((int)pos.second, (int)pos.first * 2, str.c_str());
+        mvaddstr((int)pos.first, (int)pos.second * 2, str.c_str());
         _attrOffColors(foregroundColor, backgroundColor);
     }
     refresh();

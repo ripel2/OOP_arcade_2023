@@ -109,8 +109,16 @@ bool acd::Core::isReady() const
 
 void acd::Core::startGame()
 {
-    std::cout << "Menu successfully returned is ready" << std::endl;
-    std::cout << _currentGraphicLib << std::endl;
-    std::cout << _currentGameLib << std::endl;
-    std::cout << _username << std::endl;
+    std::unique_ptr<IGraphicModule> graphicLib = std::move(_graphicLibs[_currentGraphicLib]->getInstance());
+    std::unique_ptr<IGameModule> gameLib = std::move(_gameLibs[_currentGameLib]->getInstance());
+
+    while (1) {
+        graphicLib->getInputs();
+        acd::Input input = graphicLib->getLatestInput();
+        if (input == acd::Input::KEY_ESCAPE) {
+            break;
+        }
+        gameLib->update(input);
+        graphicLib->display(gameLib->getMap());
+    }
 }

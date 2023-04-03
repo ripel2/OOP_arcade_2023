@@ -36,13 +36,13 @@ void acd::graphicSfml::display(GameMap const &map)
                 acd::IBlock &block = grid.at({x, y}).get();
                 std::size_t posX = x;
                 std::size_t posY = y;
-                backgroundText.loadFromFile(block.getBackground());
+                backgroundText.loadFromFile(block.getBackgroundPath());
                 background.setTexture(backgroundText);
                 background.setPosition(posX * 32, posY * 32);
                 background.setScale(0.5, 0.5);
                 _window.draw(background);
-                if (block.getForeground() != "") {
-                    foregroundText.loadFromFile(block.getForeground());
+                if (block.getForegroundPath() != "") {
+                    foregroundText.loadFromFile(block.getForegroundPath());
                     foreground.setTexture(foregroundText);
                     foreground.setPosition(posX * 32, posY * 32);
                     foreground.setScale(0.5, 0.5);

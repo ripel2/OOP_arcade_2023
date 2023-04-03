@@ -8,7 +8,8 @@
 #include "Snake.hpp"
 
 acd::Snake::Snake()
-    : AGameModule(), _map(31, 31), _isPaused(false), _direction(0), _isGameOver(false), _movedOnce(false), _lastUpdate(std::chrono::system_clock::now())
+    : AGameModule(), _map(31, 31), _isPaused(false), _direction(0), _isGameOver(false),
+    _movedOnce(false), _food(0, 0), _lastUpdate(std::chrono::system_clock::now())
 {
     _isPaused = false;
     _blocks = std::vector<std::unique_ptr<ABlock>>();
@@ -21,6 +22,10 @@ acd::Snake::Snake()
     char wallchars[2] = {' ', ' '};
     wallBlock.get()->loadTexturesNcurses(Color::WHITE, Color::RED, wallchars);
     _blocks.push_back(std::move(wallBlock));
+    std::unique_ptr<ABlock> foodBlock = std::make_unique<ABlock>();
+    char foodchars[2] = {'O', 'O'};
+    foodBlock.get()->loadTexturesNcurses(Color::WHITE, Color::GREEN, foodchars);
+    _blocks.push_back(std::move(foodBlock));
     for (std::size_t y = 0; y < 31; y++) {
         _map.setBlock(0, y, *_blocks[1].get());
         _map.setBlock(30, y, *_blocks[1].get());
@@ -45,6 +50,8 @@ void acd::Snake::_initSnake()
     _snake.push_back(std::pair<int, int>(15, 14));
     _snake.push_back(std::pair<int, int>(15, 13));
     _snake.push_back(std::pair<int, int>(15, 12));
+    _food = std::pair<int, int>(15, 22);
+    _map.setBlock(_food.first, _food.second, *_blocks[2].get());
     for (std::size_t c = 0; c < _snake.size(); c++)
         _map.setBlock(_snake[c].first, _snake[c].second, *_blocks[0].get());
     setScore(0);
@@ -136,6 +143,13 @@ acd::updateType_t acd::Snake::update(Input latestInput)
                 }
             }
         }
+    }
+    if (_snake[0].first == _food.first && _snake[0].second == _food.second) {
+        _snake.push_back(std::pair<int, int>(_snake[_snake.size() - 1].first, _snake[_snake.size() - 1].second));
+        _map.removeBlock(_food.first, _food.second);
+        _food = std::pair<int, int>(rand() % 29 + 1, rand() % 29 + 1);
+        _map.setBlock(_food.first, _food.second, *_blocks[2].get());
+        setScore(getScore() + 1);
     }
     setMap(_map);
     _lastUpdate = std::chrono::system_clock::now();

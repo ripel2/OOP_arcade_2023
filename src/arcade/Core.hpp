@@ -10,6 +10,7 @@
 #include <exception>
 #include <string>
 #include <filesystem>
+#include <memory>
 
 #include "IGraphicModule.hpp"
 #include "IGameModule.hpp"

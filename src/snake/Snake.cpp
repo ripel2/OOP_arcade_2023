@@ -12,17 +12,17 @@ acd::Snake::Snake()
     _movedOnce(false), _food(0, 0), _lastUpdate(std::chrono::system_clock::now())
 {
     _isPaused = false;
-    _blocks = std::vector<std::unique_ptr<ABlock>>();
-    _textBlocks = std::vector<std::unique_ptr<ATextBlock>>();
-    std::unique_ptr<ABlock> snakeBlock = std::make_unique<ABlock>();
+    _blocks = std::vector<std::unique_ptr<Block>>();
+    _textBlocks = std::vector<std::unique_ptr<TextBlock>>();
+    std::unique_ptr<Block> snakeBlock = std::make_unique<Block>();
     char blockchars[2] = {' ', ' '};
     snakeBlock.get()->loadTexturesNcurses(Color::WHITE, Color::BLUE, blockchars);
     _blocks.push_back(std::move(snakeBlock));
-    std::unique_ptr<ABlock> wallBlock = std::make_unique<ABlock>();
+    std::unique_ptr<Block> wallBlock = std::make_unique<Block>();
     char wallchars[2] = {' ', ' '};
     wallBlock.get()->loadTexturesNcurses(Color::WHITE, Color::RED, wallchars);
     _blocks.push_back(std::move(wallBlock));
-    std::unique_ptr<ABlock> foodBlock = std::make_unique<ABlock>();
+    std::unique_ptr<Block> foodBlock = std::make_unique<Block>();
     char foodchars[2] = {'O', 'O'};
     foodBlock.get()->loadTexturesNcurses(Color::WHITE, Color::GREEN, foodchars);
     _blocks.push_back(std::move(foodBlock));
@@ -34,14 +34,14 @@ acd::Snake::Snake()
         _map.setBlock(0, y, *_blocks[1].get());
         _map.setBlock(30, y, *_blocks[1].get());
     }
-    std::unique_ptr<ATextBlock> score = std::make_unique<ATextBlock>();
+    std::unique_ptr<TextBlock> score = std::make_unique<TextBlock>();
     score.get()->setText("Score: 0");
     score.get()->setColor(Color::BLACK);
     score.get()->setBackColor(Color::WHITE);
     score.get()->setTextPosition(0, 0);
     _map.setText("score", *score.get());
     _textBlocks.push_back(std::move(score));
-    std::unique_ptr<ATextBlock> title = std::make_unique<ATextBlock>();
+    std::unique_ptr<TextBlock> title = std::make_unique<TextBlock>();
     title.get()->setText("S N A K E");
     title.get()->setColor(Color::BLACK);
     title.get()->setBackColor(Color::WHITE);
@@ -54,7 +54,7 @@ acd::Snake::Snake()
 
 void acd::Snake::_setGameOver()
 {
-    std::unique_ptr<ATextBlock> gameOver = std::make_unique<ATextBlock>();
+    std::unique_ptr<TextBlock> gameOver = std::make_unique<TextBlock>();
     gameOver.get()->setText("GAME  OVER");
     gameOver.get()->setColor(Color::BLACK);
     gameOver.get()->setBackColor(Color::RED);
@@ -66,10 +66,10 @@ void acd::Snake::_setGameOver()
 
 acd::updateType_t acd::Snake::update(Input latestInput)
 {
-    if (latestInput == Input::KEY_P) {
+    if (latestInput == Input::KEY__P) {
         _isPaused = !_isPaused;
     }
-    if (latestInput == Input::KEY_R) {
+    if (latestInput == Input::KEY__R) {
         restart();
         _isGameOver = false;
         _isPaused = false;
@@ -77,25 +77,25 @@ acd::updateType_t acd::Snake::update(Input latestInput)
     if (_isPaused || _isGameOver)
         return acd::updateType_t::UPDATE_NONE;
     switch (latestInput) {
-        case Input::KEY_S:
+        case Input::KEY__S:
             if (_direction != 2 && _movedOnce) {
                 _direction = 0;
                 _movedOnce = false;
             }
             break;
-        case Input::KEY_D:
+        case Input::KEY__D:
             if (_direction != 3 && _movedOnce) {
                 _direction = 1;
                 _movedOnce = false;
             }
             break;
-        case Input::KEY_Z:
+        case Input::KEY__Z:
             if (_direction != 0 && _movedOnce) {
                 _direction = 2;
                 _movedOnce = false;
             }
             break;
-        case Input::KEY_Q:
+        case Input::KEY__Q:
             if (_direction != 1 && _movedOnce) {
                 _direction = 3;
                 _movedOnce = false;

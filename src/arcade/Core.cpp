@@ -88,7 +88,7 @@ void acd::Core::startMenu()
     while (!menu.isReady()) {
         lib->getInputs();
         acd::Input input = lib->getLatestInput();
-        if (input == acd::Input::KEY_ESCAPE) {
+        if (input == acd::Input::KEY__ESCAPE) {
             break;
         }
         acd::updateType_t update = menu.update(input);
@@ -115,7 +115,7 @@ void acd::Core::startGame()
     while (1) {
         graphicLib->getInputs();
         acd::Input input = graphicLib->getLatestInput();
-        if (input == acd::Input::KEY_ESCAPE) {
+        if (input == acd::Input::KEY__ESCAPE) {
             break;
         }
         gameLib->update(input);

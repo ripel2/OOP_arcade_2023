@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "IGameModule.hpp"
 #include "AGameModule.hpp"

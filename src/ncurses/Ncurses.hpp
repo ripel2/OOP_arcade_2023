@@ -11,6 +11,8 @@
 #include "Inputs.hpp"
 #include "GameMap.hpp"
 
+#include <memory>
+
 namespace acd {
     class Ncurses : public AGraphicModule {
         public:
@@ -32,11 +34,8 @@ namespace acd {
              * @brief Get the Users Inputs
              */
             void getInputs() override;
-            void setRefBlocks(const std::map<std::string, std::reference_wrapper<acd::IBlock>> &refBlocks) override;
-            const std::map<std::string, std::reference_wrapper<IBlock>> &getRefBlocks() const override;
-            IBlock &getRefBlock(const std::string &name) const override;
         private:
-            std::map<std::string, std::reference_wrapper<IBlock>> _refBlocks;
+            std::map<std::string, std::reference_wrapper<Block>> _refBlocks;
             // foreground color, background color, pair number, is bright
             std::map<std::pair<acd::Color, acd::Color>, std::pair<int, bool>> _colorPairs;
             void _initColors();

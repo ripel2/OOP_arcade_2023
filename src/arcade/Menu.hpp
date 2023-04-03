@@ -8,11 +8,12 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 
 #include "IGameModule.hpp"
 #include "AGameModule.hpp"
-#include "ABlock.hpp"
-#include "ATextBlock.hpp"
+#include "Block.hpp"
+#include "TextBlock.hpp"
 
 namespace acd {
     // Menu is a special module so we allow it to have some different functions
@@ -45,8 +46,8 @@ namespace acd {
             GameMap _map;
             // There is a maximum of 10 characters for the username so we alloc 11 chars
             char _username[10 + 1];
-            std::vector<std::unique_ptr<ABlock>> _blocks;
-            std::vector<std::unique_ptr<ATextBlock>> _textBlocks;
+            std::vector<std::unique_ptr<Block>> _blocks;
+            std::vector<std::unique_ptr<TextBlock>> _textBlocks;
             void arrowUp();
             void arrowDown();
             void arrowLeft();

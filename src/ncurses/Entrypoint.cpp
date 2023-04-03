@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "IGraphicModule.hpp"
 #include "AGraphicModule.hpp"

@@ -9,10 +9,11 @@
 
 #include "IGameModule.hpp"
 #include "AGameModule.hpp"
-#include "ABlock.hpp"
-#include "ATextBlock.hpp"
+#include "Block.hpp"
+#include "TextBlock.hpp"
 
 #include <chrono>
+#include <memory>
 
 namespace acd {
     class Snake : public AGameModule {
@@ -25,8 +26,8 @@ namespace acd {
             void restart();
         private:
             GameMap _map;
-            std::vector<std::unique_ptr<ABlock>> _blocks;
-            std::vector<std::unique_ptr<ATextBlock>> _textBlocks;
+            std::vector<std::unique_ptr<Block>> _blocks;
+            std::vector<std::unique_ptr<TextBlock>> _textBlocks;
             std::vector<std::pair<int, int>> _snake;
             bool _isPaused;
             int _direction;

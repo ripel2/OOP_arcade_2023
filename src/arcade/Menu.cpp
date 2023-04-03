@@ -29,7 +29,7 @@ void acd::Menu::_initTitleBlocks()
         "  X X  X X  X    X X  X X  X   ",
         "  X X  X X  XXX  X X  XX   XXX "
     };
-    std::unique_ptr<ABlock> logoBlock = std::make_unique<ABlock>();
+    std::unique_ptr<Block> logoBlock = std::make_unique<Block>();
     char blockchars[2] = {' ', ' '};
     logoBlock.get()->loadTexturesNcurses(Color::WHITE, Color::BLUE, blockchars);
     _blocks.push_back(std::move(logoBlock));
@@ -44,7 +44,7 @@ void acd::Menu::_initTitleBlocks()
 
 void acd::Menu::_initOptionBlocks()
 {
-    std::unique_ptr<ATextBlock> titleBlock = std::make_unique<ATextBlock>();
+    std::unique_ptr<TextBlock> titleBlock = std::make_unique<TextBlock>();
     titleBlock.get()->setText("Choose a graphic library:");
     titleBlock.get()->setTextPosition(8, 2);
     titleBlock.get()->setBackColor(Color::BLACK);
@@ -52,7 +52,7 @@ void acd::Menu::_initOptionBlocks()
     _map.setText("titleBlock", *titleBlock.get());
     _textBlocks.push_back(std::move(titleBlock));
     for (std::size_t c = 0; c < 13; c++) {
-        std::unique_ptr<ATextBlock> block = std::make_unique<ATextBlock>();
+        std::unique_ptr<TextBlock> block = std::make_unique<TextBlock>();
         block.get()->setTextPosition(10 + c, 2);
         block.get()->setBackColor(Color::BLACK);
         block.get()->setColor(Color::WHITE);
@@ -67,7 +67,7 @@ void acd::Menu::_initUsernameChars()
         _map.removeText("optionBlock" + std::to_string(c));
     }
     for (std::size_t c = 0; c < sizeof(_username) - 1; c++) {
-        std::unique_ptr<ATextBlock> block = std::make_unique<ATextBlock>();
+        std::unique_ptr<TextBlock> block = std::make_unique<TextBlock>();
         block.get()->setTextPosition(10, 2 + c);
         block.get()->setBackColor(Color::BLACK);
         block.get()->setColor(Color::WHITE);
@@ -137,33 +137,33 @@ void acd::Menu::addCharToUsername(acd::Input latestInput)
     if (!_selectedGraphicLib || !_selectedGameLib)
         return;
     std::map<acd::Input, char> dc = {
-        { acd::Input::KEY_A, 'A' },
-        { acd::Input::KEY_B, 'B' },
-        { acd::Input::KEY_C, 'C' },
-        { acd::Input::KEY_D, 'D' },
-        { acd::Input::KEY_E, 'E' },
-        { acd::Input::KEY_F, 'F' },
-        { acd::Input::KEY_G, 'G' },
-        { acd::Input::KEY_H, 'H' },
-        { acd::Input::KEY_I, 'I' },
-        { acd::Input::KEY_J, 'J' },
-        { acd::Input::KEY_K, 'K' },
-        { acd::Input::KEY_L, 'L' },
-        { acd::Input::KEY_M, 'M' },
-        { acd::Input::KEY_N, 'N' },
-        { acd::Input::KEY_O, 'O' },
-        { acd::Input::KEY_P, 'P' },
-        { acd::Input::KEY_Q, 'Q' },
-        { acd::Input::KEY_R, 'R' },
-        { acd::Input::KEY_S, 'S' },
-        { acd::Input::KEY_T, 'T' },
-        { acd::Input::KEY_U, 'U' },
-        { acd::Input::KEY_V, 'V' },
-        { acd::Input::KEY_W, 'W' },
-        { acd::Input::KEY_X, 'X' },
-        { acd::Input::KEY_Y, 'Y' },
-        { acd::Input::KEY_Z, 'Z' },
-        { acd::Input::KEY_SPACE, ' '}
+        { acd::Input::KEY__A, 'A' },
+        { acd::Input::KEY__B, 'B' },
+        { acd::Input::KEY__C, 'C' },
+        { acd::Input::KEY__D, 'D' },
+        { acd::Input::KEY__E, 'E' },
+        { acd::Input::KEY__F, 'F' },
+        { acd::Input::KEY__G, 'G' },
+        { acd::Input::KEY__H, 'H' },
+        { acd::Input::KEY__I, 'I' },
+        { acd::Input::KEY__J, 'J' },
+        { acd::Input::KEY__K, 'K' },
+        { acd::Input::KEY__L, 'L' },
+        { acd::Input::KEY__M, 'M' },
+        { acd::Input::KEY__N, 'N' },
+        { acd::Input::KEY__O, 'O' },
+        { acd::Input::KEY__P, 'P' },
+        { acd::Input::KEY__Q, 'Q' },
+        { acd::Input::KEY__R, 'R' },
+        { acd::Input::KEY__S, 'S' },
+        { acd::Input::KEY__T, 'T' },
+        { acd::Input::KEY__U, 'U' },
+        { acd::Input::KEY__V, 'V' },
+        { acd::Input::KEY__W, 'W' },
+        { acd::Input::KEY__X, 'X' },
+        { acd::Input::KEY__Y, 'Y' },
+        { acd::Input::KEY__Z, 'Z' },
+        { acd::Input::KEY__SPACE, ' '}
     };
 
     if (dc.find(latestInput) == dc.end())
@@ -239,33 +239,33 @@ acd::updateType_t acd::Menu::update(acd::Input latestInput)
         case acd::Input::KEY__ENTER:
             pressEnter();
             break;
-        case acd::Input::KEY_A:
-        case acd::Input::KEY_B:
-        case acd::Input::KEY_C:
-        case acd::Input::KEY_D:
-        case acd::Input::KEY_E:
-        case acd::Input::KEY_F:
-        case acd::Input::KEY_G:
-        case acd::Input::KEY_H:
-        case acd::Input::KEY_I:
-        case acd::Input::KEY_J:
-        case acd::Input::KEY_K:
-        case acd::Input::KEY_L:
-        case acd::Input::KEY_M:
-        case acd::Input::KEY_N:
-        case acd::Input::KEY_O:
-        case acd::Input::KEY_P:
-        case acd::Input::KEY_Q:
-        case acd::Input::KEY_R:
-        case acd::Input::KEY_S:
-        case acd::Input::KEY_T:
-        case acd::Input::KEY_U:
-        case acd::Input::KEY_V:
-        case acd::Input::KEY_W:
-        case acd::Input::KEY_X:
-        case acd::Input::KEY_Y:
-        case acd::Input::KEY_Z:
-        case acd::Input::KEY_SPACE:
+        case acd::Input::KEY__A:
+        case acd::Input::KEY__B:
+        case acd::Input::KEY__C:
+        case acd::Input::KEY__D:
+        case acd::Input::KEY__E:
+        case acd::Input::KEY__F:
+        case acd::Input::KEY__G:
+        case acd::Input::KEY__H:
+        case acd::Input::KEY__I:
+        case acd::Input::KEY__J:
+        case acd::Input::KEY__K:
+        case acd::Input::KEY__L:
+        case acd::Input::KEY__M:
+        case acd::Input::KEY__N:
+        case acd::Input::KEY__O:
+        case acd::Input::KEY__P:
+        case acd::Input::KEY__Q:
+        case acd::Input::KEY__R:
+        case acd::Input::KEY__S:
+        case acd::Input::KEY__T:
+        case acd::Input::KEY__U:
+        case acd::Input::KEY__V:
+        case acd::Input::KEY__W:
+        case acd::Input::KEY__X:
+        case acd::Input::KEY__Y:
+        case acd::Input::KEY__Z:
+        case acd::Input::KEY__SPACE:
             addCharToUsername(latestInput);
         default:
             break;

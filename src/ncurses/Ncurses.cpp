@@ -7,9 +7,10 @@
 
 #include "Ncurses.hpp"
 
-#include "ATextBlock.hpp"
+#include "TextBlock.hpp"
 
 #include <iostream>
+#include <ncurses.h>
 
 acd::Ncurses::Ncurses()
 {
@@ -28,21 +29,6 @@ acd::Ncurses::~Ncurses()
     endwin();
 }
 
-void acd::Ncurses::setRefBlocks(const std::map<std::string, std::reference_wrapper<acd::IBlock>> &refBlocks)
-{
-    _refBlocks = refBlocks;
-}
-
-const std::map<std::string, std::reference_wrapper<acd::IBlock>> &acd::Ncurses::getRefBlocks() const
-{
-    return _refBlocks;
-}
-
-acd::IBlock &acd::Ncurses::getRefBlock(const std::string &name) const
-{
-    return _refBlocks.at(name);
-}
-
 void acd::Ncurses::getInputs()
 {
     int ch = getch();
@@ -53,36 +39,35 @@ void acd::Ncurses::getInputs()
         {KEY_RIGHT, acd::KEY__RIGHT},
         {KEY_ENTER, acd::KEY__ENTER},
         {'\n', acd::KEY__ENTER},
-        {27, acd::KEY_ESCAPE},
-        {32, acd::KEY_SPACE},
-        {97, acd::KEY_A},
-        {98, acd::KEY_B},
-        {99, acd::KEY_C},
-        {100, acd::KEY_D},
-        {101, acd::KEY_E},
-        {102, acd::KEY_F},
-        {103, acd::KEY_G},
-        {104, acd::KEY_H},
-        {105, acd::KEY_I},
-        {106, acd::KEY_J},
-        {107, acd::KEY_K},
-        {108, acd::KEY_L},
-        {109, acd::KEY_M},
-        {110, acd::KEY_N},
-        {111, acd::KEY_O},
-        {112, acd::KEY_P},
-        {113, acd::KEY_Q},
-        {114, acd::KEY_R},
-        {115, acd::KEY_S},
-        {116, acd::KEY_T},
-        {117, acd::KEY_U},
-        {118, acd::KEY_V},
-        {119, acd::KEY_W},
-        {120, acd::KEY_X},
-        {121, acd::KEY_Y},
-        {122, acd::KEY_Z}
+        {27, acd::KEY__ESCAPE},
+        {32, acd::KEY__SPACE},
+        {97, acd::KEY__A},
+        {98, acd::KEY__B},
+        {99, acd::KEY__C},
+        {100, acd::KEY__D},
+        {101, acd::KEY__E},
+        {102, acd::KEY__F},
+        {103, acd::KEY__G},
+        {104, acd::KEY__H},
+        {105, acd::KEY__I},
+        {106, acd::KEY__J},
+        {107, acd::KEY__K},
+        {108, acd::KEY__L},
+        {109, acd::KEY__M},
+        {110, acd::KEY__N},
+        {111, acd::KEY__O},
+        {112, acd::KEY__P},
+        {113, acd::KEY__Q},
+        {114, acd::KEY__R},
+        {115, acd::KEY__S},
+        {116, acd::KEY__T},
+        {117, acd::KEY__U},
+        {118, acd::KEY__V},
+        {119, acd::KEY__W},
+        {120, acd::KEY__X},
+        {121, acd::KEY__Y},
+        {122, acd::KEY__Z}
     };
-
     if (ch == ERR) {
         return;
     }
@@ -94,8 +79,8 @@ void acd::Ncurses::getInputs()
 void acd::Ncurses::display(GameMap const &map)
 {
     std::pair<std::size_t, std::size_t> size = map.getSize();
-    std::map<std::pair<std::size_t, std::size_t>, std::reference_wrapper<acd::IBlock>> grid = map.getGrid();
-    std::map<std::string, std::reference_wrapper<acd::ITextBlock>> texts = map.getTexts();
+    std::map<std::pair<std::size_t, std::size_t>, std::reference_wrapper<acd::Block>> grid = map.getGrid();
+    std::map<std::string, std::reference_wrapper<acd::TextBlock>> texts = map.getTexts();
 
     if ((int)size.second > COLS / 2 || (int)size.first > LINES) {
         erase();
@@ -110,7 +95,7 @@ void acd::Ncurses::display(GameMap const &map)
     for (std::size_t y = 0; y < size.second; y++) {
         for (std::size_t x = 0; x < size.first; x++) {
             if (grid.find({x, y}) != grid.end()) {
-                acd::IBlock &block = grid.at({x, y}).get();
+                acd::Block &block = grid.at({x, y}).get();
                 std::size_t posX = x;
                 std::size_t posY = y;
                 char *nchars = block.getCharactersNcurses();

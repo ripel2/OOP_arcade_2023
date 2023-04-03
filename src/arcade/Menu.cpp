@@ -46,14 +46,14 @@ void acd::Menu::_initOptionBlocks()
 {
     std::unique_ptr<ATextBlock> titleBlock = std::make_unique<ATextBlock>();
     titleBlock.get()->setText("Choose a graphic library:");
-    titleBlock.get()->setTextPosition(2, 8);
+    titleBlock.get()->setTextPosition(8, 2);
     titleBlock.get()->setBackColor(Color::BLACK);
     titleBlock.get()->setColor(Color::WHITE);
     _map.setText("titleBlock", *titleBlock.get());
     _textBlocks.push_back(std::move(titleBlock));
     for (std::size_t c = 0; c < 13; c++) {
         std::unique_ptr<ATextBlock> block = std::make_unique<ATextBlock>();
-        block.get()->setTextPosition(2, 10 + c);
+        block.get()->setTextPosition(10 + c, 2);
         block.get()->setBackColor(Color::BLACK);
         block.get()->setColor(Color::WHITE);
         _map.setText("optionBlock" + std::to_string(c), *block.get());
@@ -68,7 +68,7 @@ void acd::Menu::_initUsernameChars()
     }
     for (std::size_t c = 0; c < sizeof(_username) - 1; c++) {
         std::unique_ptr<ATextBlock> block = std::make_unique<ATextBlock>();
-        block.get()->setTextPosition(2 + c, 10);
+        block.get()->setTextPosition(10, 2 + c);
         block.get()->setBackColor(Color::BLACK);
         block.get()->setColor(Color::WHITE);
         _map.setText("usernameChar" + std::to_string(c), *block.get());

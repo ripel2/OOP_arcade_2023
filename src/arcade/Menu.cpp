@@ -10,7 +10,7 @@
 acd::Menu::Menu()
     : _selectedGameLibPath(""), _selectedGraphicLibPath(""),
     _selectedGraphicLibIndex(0), _selectedGameLibIndex(0), _usernameCursorIndex(0),
-    _selectedGraphicLib(false), _selectedGameLib(false), _typedUsername(false), _map(24, 32)
+    _selectedGraphicLib(false), _selectedGameLib(false), _typedUsername(false), _map(32, 24)
 {
     for (std::size_t i = 0; i < 10; i++)
         _username[i] = ' ';
@@ -39,6 +39,7 @@ void acd::Menu::_initTitleBlocks()
                 _map.setBlock(x, y + 2, *_blocks[0].get());
         }
     }
+    _map.setBlock(7, 24, *_blocks[0].get());
 }
 
 void acd::Menu::_initOptionBlocks()

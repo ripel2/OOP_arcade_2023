@@ -48,28 +48,7 @@ acd::Snake::Snake()
     title.get()->setTextPosition(0, 13);
     _map.setText("title", *title.get());
     _textBlocks.push_back(std::move(title));
-    _initSnake();
-    setMap(_map);
-}
-
-void acd::Snake::_initSnake()
-{
-    _map.removeText("gameOver");
-    for (std::size_t x = 1; x < 30; x++)
-        for (std::size_t y = 2; y < 31; y++)
-            _map.removeBlock(x, y);
-    _snake = std::vector<std::pair<int, int>>();
-    _direction = 0;
-    _snake.push_back(std::pair<int, int>(15, 15));
-    _snake.push_back(std::pair<int, int>(15, 14));
-    _snake.push_back(std::pair<int, int>(15, 13));
-    _snake.push_back(std::pair<int, int>(15, 12));
-    _food = std::pair<int, int>(15, 22);
-    _map.setBlock(_food.first, _food.second, *_blocks[2].get());
-    for (std::size_t c = 0; c < _snake.size(); c++)
-        _map.setBlock(_snake[c].first, _snake[c].second, *_blocks[0].get());
-    setScore(0);
-    _map.getText("score").setText("Score: " + std::to_string(getScore()));
+    restart();
     setMap(_map);
 }
 
@@ -91,7 +70,7 @@ acd::updateType_t acd::Snake::update(Input latestInput)
         _isPaused = !_isPaused;
     }
     if (latestInput == Input::KEY_R) {
-        _initSnake();
+        restart();
         _isGameOver = false;
         _isPaused = false;
     }
@@ -184,5 +163,21 @@ void acd::Snake::play()
 
 void acd::Snake::restart()
 {
-
+    _map.removeText("gameOver");
+    for (std::size_t x = 1; x < 30; x++)
+        for (std::size_t y = 2; y < 31; y++)
+            _map.removeBlock(x, y);
+    _snake = std::vector<std::pair<int, int>>();
+    _direction = 0;
+    _snake.push_back(std::pair<int, int>(15, 15));
+    _snake.push_back(std::pair<int, int>(15, 14));
+    _snake.push_back(std::pair<int, int>(15, 13));
+    _snake.push_back(std::pair<int, int>(15, 12));
+    _food = std::pair<int, int>(15, 22);
+    _map.setBlock(_food.first, _food.second, *_blocks[2].get());
+    for (std::size_t c = 0; c < _snake.size(); c++)
+        _map.setBlock(_snake[c].first, _snake[c].second, *_blocks[0].get());
+    setScore(0);
+    _map.getText("score").setText("Score: " + std::to_string(getScore()));
+    setMap(_map);
 }

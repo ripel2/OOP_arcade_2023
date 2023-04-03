@@ -107,8 +107,8 @@ void acd::Ncurses::display(GameMap const &map)
         return;
     }
     erase();
-    for (std::size_t y = 0; y < size.first; y++) {
-        for (std::size_t x = 0; x < size.second; x++) {
+    for (std::size_t y = 0; y < size.second; y++) {
+        for (std::size_t x = 0; x < size.first; x++) {
             if (grid.find({x, y}) != grid.end()) {
                 acd::IBlock &block = grid.at({x, y}).get();
                 std::size_t posX = x;

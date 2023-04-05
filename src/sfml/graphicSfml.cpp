@@ -92,8 +92,10 @@ void acd::graphicSfml::getInputs()
 {
     sf::Event event;
     while (_window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed)
+        if (event.type == sf::Event::Closed) {
+            addInput(Input::KEY__ESCAPE);
             _window.close();
+        }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
             addInput(Input::KEY__ESCAPE);
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))

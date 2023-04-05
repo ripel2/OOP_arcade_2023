@@ -43,6 +43,6 @@ namespace acd {
         private :
             sf::RenderWindow _window;
             std::map<std::string, std::reference_wrapper<IBlock>>  _refBlocks;
-            void _createRefBlocks();
+            sf::Color getColorToSfmlColor(Color color);
     };
 }

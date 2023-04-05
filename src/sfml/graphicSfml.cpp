@@ -10,7 +10,6 @@
 acd::graphicSfml::graphicSfml()
 {
     _window.create(sf::VideoMode(1920, 1080), "Arcade");
-    _createRefBlocks();
 }
 
 acd::graphicSfml::~graphicSfml()
@@ -24,6 +23,7 @@ void acd::graphicSfml::display(GameMap const &map)
     std::pair<std::size_t, std::size_t> size = map.getSize();
     std::map<std::pair<std::size_t, std::size_t>, std::reference_wrapper<acd::IBlock>> grid = map.getGrid();
     std::map<std::string, std::reference_wrapper<acd::ITextBlock>> texts = map.getTexts();
+    sf::Text text;
     sf::Sprite foreground = sf::Sprite();
     sf::Texture foregroundText = sf::Texture();
     sf::Sprite background = sf::Sprite();
@@ -36,10 +36,18 @@ void acd::graphicSfml::display(GameMap const &map)
                 acd::IBlock &block = grid.at({x, y}).get();
                 std::size_t posX = x;
                 std::size_t posY = y;
-                backgroundText.loadFromFile(block.getBackgroundPath());
-                background.setTexture(backgroundText);
-                background.setPosition(posX * 32, posY * 32);
-                background.setScale(0.5, 0.5);
+                if (block.getBackgroundPath() == "") {
+                    background.setTexture(backgroundText);
+                    background.setPosition(posX * 32, posY * 32);
+                    background.setColor(getColorToSfmlColor(block.getBackgroundColorNcurses()));
+                    background.setScale(0.5, 0.5);
+                } else {
+                    backgroundText.loadFromFile(block.getBackgroundPath());
+                    background.setTexture(backgroundText);
+                    background.setPosition(posX * 32, posY * 32);
+                    background.setColor(sf::Color::Black);
+                    background.setScale(0.5, 0.5);
+                }
                 _window.draw(background);
                 if (block.getForegroundPath() != "") {
                     foregroundText.loadFromFile(block.getForegroundPath());
@@ -51,11 +59,33 @@ void acd::graphicSfml::display(GameMap const &map)
             }
         }
     }
+
     foreground.~Sprite();
     background.~Sprite();
     foregroundText.~Texture();
     backgroundText.~Texture();
     _window.display();
+}
+
+sf::Color acd::graphicSfml::getColorToSfmlColor(acd::Color color)
+{
+    if (color == acd::Color::BLACK || color == acd::Color::LIGHT_BLACK)
+        return sf::Color::Black;
+    if (color == acd::Color::RED || color == acd::Color::LIGHT_RED)
+        return sf::Color::Red;
+    if (color == acd::Color::GREEN || color == acd::Color::LIGHT_GREEN)
+        return sf::Color::Green;
+    if (color == acd::Color::YELLOW || color == acd::Color::LIGHT_YELLOW)
+        return sf::Color::Yellow;
+    if (color == acd::Color::BLUE || color == acd::Color::LIGHT_BLUE)
+        return sf::Color::Blue;
+    if (color == acd::Color::MAGENTA || color == acd::Color::LIGHT_MAGENTA)
+        return sf::Color::Magenta;
+    if (color == acd::Color::CYAN || color == acd::Color::LIGHT_CYAN)
+        return sf::Color::Cyan;
+    if (color == acd::Color::WHITE || color == acd::Color::LIGHT_WHITE)
+        return sf::Color::White;
+    return sf::Color::Black;
 }
 
 void acd::graphicSfml::getInputs()
@@ -145,27 +175,4 @@ const std::map<std::string, std::reference_wrapper<acd::IBlock>> &acd::graphicSf
 acd::IBlock &acd::graphicSfml::getRefBlock(const std::string &name) const
 {
     return _refBlocks.at(name);
-}
-
-void acd::graphicSfml::_createRefBlocks()
-{
-    std::map<std::string, std::reference_wrapper<acd::IBlock>> blocks;
-    blocks.emplace("wall", std::ref(acd::ABlocks("assets/wall.png", "")));
-    blocks.emplace("snake_end_down", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-end-down.png")));
-    blocks.emplace("snake_end_left", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-end-left.png")));
-    blocks.emplace("snake_end_right", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-end-right.png")));
-    blocks.emplace("snake_end_up", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-end-up.png")));
-    blocks.emplace("snake_body_horizontal", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-body-horizontal.png")));
-    blocks.emplace("snake_body_vertical", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-body-vertical.png")));
-    blocks.emplace("snake_turn_left_down", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-turn-left-down.png")));
-    blocks.emplace("snake_turn_left_up", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-turn-left-up.png")));
-    blocks.emplace("snake_turn_right_down", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-turn-right-down.png")));
-    blocks.emplace("snake_turn_right_up", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-turn-right-up.png")));
-    blocks.emplace("snake_head_down", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-head-down.png")));
-    blocks.emplace("snake_head_left", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-head-left.png")));
-    blocks.emplace("snake_head_right", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-head-right.png")));
-    blocks.emplace("snake_head_up", std::ref(acd::ABlocks("assets/grassdark.png", "assets/snake-head-up.png")));
-    blocks.emplace("apple", std::ref(acd::ABlocks("assets/grassdark.png", "assets/apple.png")));
-    blocks.emplace("grassdark", std::ref(acd::ABlocks("assets/grassdark.png", "")));
-    setRefBlocks(blocks);
 }

@@ -39,7 +39,6 @@ void acd::Menu::_initTitleBlocks()
                 _map.setBlock(x, y + 2, *_blocks[0].get());
         }
     }
-    _map.setBlock(7, 24, *_blocks[0].get());
 }
 
 void acd::Menu::_initOptionBlocks()

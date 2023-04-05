@@ -69,6 +69,18 @@ acd::updateType_t acd::Snake::update(Input latestInput)
     char blockchars[2] = {' ', ' '};
     _blocks[2].get()->loadTexturesNcurses(Color::WHITE, Color::GREEN, blockchars);
 
+    if (latestInput == Input::KEY__RIGHT) {
+        return acd::updateType_t::NEXTGRAPHIC;
+    }
+    if (latestInput == Input::KEY__LEFT) {
+        return acd::updateType_t::PREVGRAPHIC;
+    }
+    if (latestInput == Input::KEY__UP) {
+        return acd::updateType_t::NEXTGAME;
+    }
+    if (latestInput == Input::KEY__DOWN) {
+        return acd::updateType_t::PREVGAME;
+    }
     if (latestInput == Input::KEY__P) {
         _isPaused = !_isPaused;
     }

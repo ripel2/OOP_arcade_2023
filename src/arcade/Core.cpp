@@ -9,12 +9,17 @@
 
 acd::Core::Core(const char *lib)
 {
+    _startLibPath = "";
     _isReady = false;
     if (!std::filesystem::exists(lib))
         throw CoreException("library " + std::string(lib) + " does not exist");
-    _startLib = getGraphicLib(lib);
-    _graphicLibs = std::map<std::string, std::unique_ptr<DLLoader<IGraphicModule>>>();
-    _gameLibs = std::map<std::string, std::unique_ptr<DLLoader<IGameModule>>>();
+    _startLibPath = lib;
+    _graphicLibs = std::vector<std::pair<std::string, std::unique_ptr<DLLoader<IGraphicModule>>>>();
+    _gameLibs = std::vector<std::pair<std::string, std::unique_ptr<DLLoader<IGameModule>>>>();
+    _gameLibIndex = 0;
+    _graphicLibIndex = 0;
+    _graphicLib = nullptr;
+    _gameLib = nullptr;
 }
 
 acd::Core::~Core()
@@ -32,11 +37,13 @@ void acd::Core::loadLibsFromFolder(const std::string &folder)
         if (entry.path().extension() == ".so") {
             try {
                 std::unique_ptr<DLLoader<IGraphicModule>> lib = getGraphicLib(entry.path());
-                _graphicLibs[entry.path().generic_string()] = std::move(lib);
+                _graphicLibs.push_back(std::make_pair(entry.path(), std::move(lib)));
+                if (entry.path() == _startLibPath)
+                    _graphicLibIndex = _graphicLibs.size() - 1;
             } catch (const std::exception &e) {
                 try {
                     std::unique_ptr<DLLoader<IGameModule>> lib = getGameLib(entry.path());
-                    _gameLibs[entry.path().generic_string()] = std::move(lib);
+                    _gameLibs.push_back(std::make_pair(entry.path(), std::move(lib)));
                 } catch (const std::exception &e) {
                     throw CoreException("library " + entry.path().generic_string() + " is not a graphic or a game library");
                 }
@@ -79,26 +86,60 @@ void acd::Core::setupMenu(acd::Menu &menu)
     menu.setAvailableGameLibs(gameLibsPaths);
 }
 
+void acd::Core::_updateLibs(acd::updateType_t update)
+{
+    if (update == acd::updateType_t::NEXTGRAPHIC) {
+        _graphicLibIndex++;
+        if (_graphicLibIndex >= _graphicLibs.size())
+            _graphicLibIndex = 0;
+        _graphicLib = std::move(_graphicLibs[_graphicLibIndex].second->getInstance());
+    } else if (update == acd::updateType_t::PREVGRAPHIC) {
+        _graphicLibIndex--;
+        if (_graphicLibIndex < 0)
+            _graphicLibIndex = _graphicLibs.size() - 1;
+        _graphicLib = std::move(_graphicLibs[_graphicLibIndex].second->getInstance());
+    } else if (update == acd::updateType_t::NEXTGAME) {
+        _gameLibIndex++;
+        if (_gameLibIndex >= _gameLibs.size())
+            _gameLibIndex = 0;
+        _gameLib = std::move(_gameLibs[_gameLibIndex].second->getInstance());
+    } else if (update == acd::updateType_t::PREVGAME) {
+        _gameLibIndex--;
+        if (_gameLibIndex < 0)
+            _gameLibIndex = _gameLibs.size() - 1;
+        _gameLib = std::move(_gameLibs[_gameLibIndex].second->getInstance());
+    }
+}
+
 void acd::Core::startMenu()
 {
-    std::unique_ptr<IGraphicModule> lib = std::move(_startLib->getInstance());
     acd::Menu menu;
 
+    _graphicLib = std::move(_graphicLibs[_graphicLibIndex].second->getInstance());
     setupMenu(menu);
     while (!menu.isReady()) {
-        lib->getInputs();
-        acd::Input input = lib->getLatestInput();
+        _graphicLib->getInputs();
+        acd::Input input = _graphicLib->getLatestInput();
         if (input == acd::Input::KEY__ESCAPE) {
             break;
         }
         acd::updateType_t update = menu.update(input);
-        lib->display(menu.getMap());
+        _updateLibs(update);
+        _graphicLib->display(menu.getMap());
     }
     if (menu.isReady()) {
         _isReady = true;
-        _currentGraphicLib = menu.getSelectedGraphicLib();
-        _currentGameLib = menu.getSelectedGameLib();
         _username = menu.getUsername();
+        for (const auto &lib : _gameLibs) {
+            if (lib.first == menu.getSelectedGameLib())
+                break;
+            _gameLibIndex++;
+        }
+        for (const auto &lib : _graphicLibs) {
+            if (lib.first == menu.getSelectedGraphicLib())
+                break;
+            _graphicLibIndex++;
+        }
     }
 }
 
@@ -109,16 +150,16 @@ bool acd::Core::isReady() const
 
 void acd::Core::startGame()
 {
-    std::unique_ptr<IGraphicModule> graphicLib = std::move(_graphicLibs[_currentGraphicLib]->getInstance());
-    std::unique_ptr<IGameModule> gameLib = std::move(_gameLibs[_currentGameLib]->getInstance());
-
+    _graphicLib = std::move(_graphicLibs[_graphicLibIndex].second->getInstance());
+    _gameLib  = std::move(_gameLibs[_gameLibIndex].second->getInstance());
     while (1) {
-        graphicLib->getInputs();
-        acd::Input input = graphicLib->getLatestInput();
+        _graphicLib->getInputs();
+        acd::Input input = _graphicLib->getLatestInput();
         if (input == acd::Input::KEY__ESCAPE) {
             break;
         }
-        gameLib->update(input);
-        graphicLib->display(gameLib->getMap());
+        acd::updateType_t update = _gameLib->update(input);
+        _updateLibs(update);
+        _graphicLib->display(_gameLib->getMap());
     }
 }

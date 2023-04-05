@@ -23,11 +23,12 @@ void acd::graphicSfml::display(GameMap const &map)
     std::pair<std::size_t, std::size_t> size = map.getSize();
     std::map<std::pair<std::size_t, std::size_t>, std::reference_wrapper<acd::Block>> grid = map.getGrid();
     std::map<std::string, std::reference_wrapper<acd::TextBlock>> texts = map.getTexts();
-    sf::Text text;
+    sf::Text text = sf::Text();
     sf::Sprite foreground = sf::Sprite();
     sf::Texture foregroundText = sf::Texture();
     sf::Sprite background = sf::Sprite();
     sf::Texture backgroundText = sf::Texture();
+    sf::RectangleShape backgroundRec = sf::RectangleShape();
 
     _window.clear();
     for (std::size_t y = 0; y < size.first; y++) {
@@ -37,18 +38,17 @@ void acd::graphicSfml::display(GameMap const &map)
                 std::size_t posX = x;
                 std::size_t posY = y;
                 if (block.getBackgroundPath() == "") {
-                    background.setTexture(backgroundText);
-                    background.setPosition(posX * 32, posY * 32);
-                    background.setColor(getColorToSfmlColor(block.getBackgroundColorNcurses()));
-                    background.setScale(0.5, 0.5);
+                    backgroundRec.setPosition(posX * 25, posY * 25);
+                    backgroundRec.setSize(sf::Vector2f(25, 25));
+                    backgroundRec.setFillColor(getColorToSfmlColor(block.getBackgroundColorNcurses()));
+                    _window.draw(backgroundRec);
                 } else {
                     backgroundText.loadFromFile(block.getBackgroundPath());
                     background.setTexture(backgroundText);
                     background.setPosition(posX * 32, posY * 32);
-                    background.setColor(sf::Color::Black);
                     background.setScale(0.5, 0.5);
+                    _window.draw(background);
                 }
-                _window.draw(background);
                 if (block.getForegroundPath() != "") {
                     foregroundText.loadFromFile(block.getForegroundPath());
                     foreground.setTexture(foregroundText);
@@ -59,7 +59,6 @@ void acd::graphicSfml::display(GameMap const &map)
             }
         }
     }
-
     foreground.~Sprite();
     background.~Sprite();
     foregroundText.~Texture();
@@ -162,19 +161,4 @@ void acd::graphicSfml::getInputs()
             addInput(Input::KEY__Z);
     }
 
-}
-
-void acd::graphicSfml::setRefBlocks(const std::map<std::string, std::reference_wrapper<acd::Block>> &refBlocks)
-{
-    _refBlocks = refBlocks;
-}
-
-const std::map<std::string, std::reference_wrapper<acd::Block>> &acd::graphicSfml::getRefBlocks() const
-{
-    return _refBlocks;
-}
-
-acd::Block &acd::graphicSfml::getRefBlock(const std::string &name) const
-{
-    return _refBlocks.at(name);
 }

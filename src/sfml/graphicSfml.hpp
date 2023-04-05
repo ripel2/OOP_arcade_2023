@@ -35,14 +35,15 @@ namespace acd {
              * @brief Get the Inputs object
              */
             void getInputs();
-            void setRefBlocks(const std::map<std::string, std::reference_wrapper<Block>> &refBlocks);
-            const std::map<std::string, std::reference_wrapper<Block>> &getRefBlocks() const;
-            Block &getRefBlock(const std::string &name) const;
-
         protected :
         private :
             sf::RenderWindow _window;
             std::map<std::string, std::reference_wrapper<Block>>  _refBlocks;
+            /**
+             * @brief Get the Color To Sfml Color object
+             * @param color
+             * @return sf::Color
+             */
             sf::Color getColorToSfmlColor(Color color);
     };
 }

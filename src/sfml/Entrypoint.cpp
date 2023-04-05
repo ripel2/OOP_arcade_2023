@@ -3,8 +3,9 @@
 
 #include "IGraphicModule.hpp"
 #include "AGraphicModule.hpp"
+#include "graphicSfml.hpp"
 
 extern "C" std::unique_ptr<acd::IGraphicModule> graphicEntryPoint()
 {
-    return nullptr;
+    return std::make_unique<acd::graphicSfml>();
 }

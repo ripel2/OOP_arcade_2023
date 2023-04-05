@@ -37,6 +37,7 @@ namespace acd {
             void getInputs();
         protected :
         private :
+            sf::Font _font;
             sf::RenderWindow _window;
             std::map<std::string, std::reference_wrapper<Block>>  _refBlocks;
             /**

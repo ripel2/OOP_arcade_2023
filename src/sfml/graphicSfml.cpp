@@ -9,13 +9,19 @@
 
 acd::graphicSfml::graphicSfml()
 {
-    _window.create(sf::VideoMode(1920, 1080), "Arcade");
+    if (!_font.loadFromFile("src/assets/arial.ttf"))
+        throw std::runtime_error("Error: Font not found");
+
+    if (!_window.isOpen())
+        _window.create(sf::VideoMode(1920, 1080), "Arcade");
+    _window.setFramerateLimit(60);
 }
 
 acd::graphicSfml::~graphicSfml()
 {
-
+    _font.~Font();
     _window.close();
+    _window.~RenderWindow();
 }
 
 void acd::graphicSfml::display(GameMap const &map)
@@ -31,15 +37,15 @@ void acd::graphicSfml::display(GameMap const &map)
     sf::RectangleShape backgroundRec = sf::RectangleShape();
 
     _window.clear();
-    for (std::size_t y = 0; y < size.first; y++) {
-        for (std::size_t x = 0; x < size.second; x++) {
+    for (std::size_t x = 0; x < size.first; x++) {
+        for (std::size_t y = 0; y < size.second; y++) {
             if (grid.find({x, y}) != grid.end()) {
                 acd::Block &block = grid.at({x, y}).get();
                 std::size_t posX = x;
                 std::size_t posY = y;
                 if (block.getBackgroundPath() == "") {
-                    backgroundRec.setPosition(posX * 25, posY * 25);
-                    backgroundRec.setSize(sf::Vector2f(25, 25));
+                    backgroundRec.setPosition(posX * 32, posY * 32);
+                    backgroundRec.setSize(sf::Vector2f(32, 32));
                     backgroundRec.setFillColor(getColorToSfmlColor(block.getBackgroundColorNcurses()));
                     _window.draw(backgroundRec);
                 } else {
@@ -58,6 +64,18 @@ void acd::graphicSfml::display(GameMap const &map)
                 }
             }
         }
+    }
+    for (auto &textBlock : texts) {
+        std::pair<std::size_t, std::size_t> pos = textBlock.second.get().getTextPosition();
+        text.setFont(_font);
+        text.setString(textBlock.second.get().getText());
+        text.setPosition(pos.second * 64, pos.first * 32);
+        if (getColorToSfmlColor(textBlock.second.get().getColor()) == sf::Color::Black) {
+            text.setFillColor(sf::Color::Cyan);
+        } else {
+            text.setFillColor(getColorToSfmlColor(textBlock.second.get().getColor()));
+        }
+        _window.draw(text);
     }
     foreground.~Sprite();
     background.~Sprite();
@@ -95,69 +113,73 @@ void acd::graphicSfml::getInputs()
             addInput(Input::KEY__ESCAPE);
             _window.close();
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape)
             addInput(Input::KEY__ESCAPE);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape)
+            addInput(Input::KEY__ESCAPE);
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Left)
             addInput(Input::KEY__LEFT);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Right)
             addInput(Input::KEY__RIGHT);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Up)
             addInput(Input::KEY__UP);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Down)
             addInput(Input::KEY__DOWN);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space)
             addInput(Input::KEY__SPACE);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter)
+            addInput(Input::KEY__ENTER);
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::A)
             addInput(Input::KEY__A);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::B)
             addInput(Input::KEY__B);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::C)
             addInput(Input::KEY__C);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::D)
             addInput(Input::KEY__D);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::E)
             addInput(Input::KEY__E);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::F)
             addInput(Input::KEY__F);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::G)
             addInput(Input::KEY__G);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::H))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::H)
             addInput(Input::KEY__H);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::I)
             addInput(Input::KEY__I);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::J)
             addInput(Input::KEY__J);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::K)
             addInput(Input::KEY__K);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::L)
             addInput(Input::KEY__L);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::M)
             addInput(Input::KEY__M);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::N)
             addInput(Input::KEY__N);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::O)
             addInput(Input::KEY__O);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::P)
             addInput(Input::KEY__P);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Q)
             addInput(Input::KEY__Q);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::R)
             addInput(Input::KEY__R);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::S)
             addInput(Input::KEY__S);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::T)
             addInput(Input::KEY__T);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::U)
             addInput(Input::KEY__U);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::V))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::V)
             addInput(Input::KEY__V);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::W)
             addInput(Input::KEY__W);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::X)
             addInput(Input::KEY__X);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Y)
             addInput(Input::KEY__Y);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+        if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Z)
             addInput(Input::KEY__Z);
     }
 

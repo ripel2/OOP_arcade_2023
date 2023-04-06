@@ -38,7 +38,7 @@ void acd::Core::loadLibsFromFolder(const std::string &folder)
             try {
                 std::unique_ptr<DLLoader<IGraphicModule>> lib = getGraphicLib(entry.path());
                 _graphicLibs.push_back(std::make_pair(entry.path(), std::move(lib)));
-                if (entry.path() == _startLibPath)
+                if (std::filesystem::canonical(entry.path()) == std::filesystem::canonical(_startLibPath))
                     _graphicLibIndex = _graphicLibs.size() - 1;
             } catch (const std::exception &e) {
                 try {

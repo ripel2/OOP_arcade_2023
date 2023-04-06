@@ -77,10 +77,26 @@ void acd::graphicSdl::display(GameMap const &map)
             }
         }
     }
+    for (auto &textBlock : texts) {
+        std::pair<std::size_t, std::size_t> pos = textBlock.second.get().getTextPosition();
+        SDL_Color color = getColorToSdlColor(textBlock.second.get().getColor());
+        if (color.r == 0 && color.g == 0 && color.b == 0) {
+            color.r = 0;
+            color.g = 255;
+            color.b = 255;
+        }
+        SDL_Surface* surface = TTF_RenderText_Solid(_font, textBlock.second.get().getText().c_str(), color);
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+        SDL_FreeSurface(surface);
+        int width, height;
+        SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+        SDL_Rect dstrect = { 100, 100, width, height };
+        SDL_RenderCopy(_renderer, texture, NULL, &dstrect);
+    }
     SDL_RenderPresent(_renderer);
 }
 
-SDL_color acd::graphicSdl::getColorToSdlColor(acd::Color color)
+SDL_Color acd::graphicSdl::getColorToSdlColor(acd::Color color)
 {
     if (color == acd::Color::BLACK || color == acd::Color::LIGHT_BLACK) {
     return SDL_Color{0, 0, 0, 255}; // Noir en RGB (0, 0, 0) et opacité à 100% (255)

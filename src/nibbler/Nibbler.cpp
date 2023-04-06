@@ -100,6 +100,79 @@ void acd::Nibbler::_setMap()
     }
 }
 
+void acd::Nibbler::_setGameOver()
+{
+    std::unique_ptr<TextBlock> gameOver = std::make_unique<TextBlock>();
+    gameOver.get()->setText("GAME  OVER");
+    gameOver.get()->setColor(Color::BLACK);
+    gameOver.get()->setBackColor(Color::RED);
+    gameOver.get()->setTextPosition(15, 13);
+    _map.setText("gameOver", *gameOver.get());
+    _textBlocks.push_back(std::move(gameOver));
+    _isGameOver = true;
+}
+
+bool acd::Nibbler::_checkCollision()
+{
+    size_t x = _nibbler[0].first;
+    size_t y = _nibbler[0].second;
+    if (_direction == 0) {
+        y++;
+    } else if (_direction == 1) {
+        x++;
+    } else if (_direction == 2) {
+        y--;
+    } else if (_direction == 3) {
+        x--;
+    }
+    if (x == 0 || x == 30 || y == 0 || y == 30)
+        return true;
+    if ((x >= 5 && x <= 10) && (y >= 5 && y <= 10))
+        return true;
+    if ((x >= 5 && x <= 10) && (y >= 20 && y <= 25))
+        return true;
+    if ((x >= 20 && x <= 25) && (y >= 5 && y <= 10))
+        return true;
+    if ((x >= 20 && x <= 25) && (y >= 20 && y <= 25))
+        return true;
+    return false;
+}
+
+void acd::Nibbler::_changeDirection()
+{
+    size_t x = _nibbler[0].first;
+    size_t y = _nibbler[0].second;
+    if (_direction == 0) {
+        _direction = 1;
+        if (_checkCollision()) {
+            _direction = 3;
+            if (_checkCollision())
+                _direction = 0;
+        }
+    } else if (_direction == 1) {
+        _direction = 2;
+        if (_checkCollision()) {
+            _direction = 0;
+            if (_checkCollision())
+                _direction = 1;
+        }
+    } else if (_direction == 2) {
+        _direction = 3;
+        if (_checkCollision()) {
+            _direction = 1;
+            if (_checkCollision())
+                _direction = 2;
+        }
+    } else if (_direction == 3) {
+        _direction = 0;
+        if (_checkCollision()) {
+            _direction = 2;
+            if (_checkCollision())
+                _direction = 3;
+        }
+    }
+}
+
 acd::updateType_t acd::Nibbler::update(acd::Input latestInput)
 {
     size_t r = 0;
@@ -147,15 +220,31 @@ acd::updateType_t acd::Nibbler::update(acd::Input latestInput)
         _map.removeBlock(_nibbler[c].first, _nibbler[c].second);
     switch (_direction) {
         case 0:
+            if (_checkCollision()) {
+                _changeDirection();
+                break;
+            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first, _nibbler[0].second + 1));
             break;
         case 1:
+            if (_checkCollision()) {
+                _changeDirection();
+                break;
+            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first + 1, _nibbler[0].second));
             break;
         case 2:
+            if (_checkCollision()) {
+                _changeDirection();
+                break;
+            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first, _nibbler[0].second - 1));
             break;
         case 3:
+            if (_checkCollision()) {
+                _changeDirection();
+                break;
+            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first - 1, _nibbler[0].second));
             break;
         default:
@@ -164,22 +253,11 @@ acd::updateType_t acd::Nibbler::update(acd::Input latestInput)
     _nibbler.pop_back();
     _movedOnce = true;
     for (std::size_t c = 0; c < _nibbler.size(); c++) {
-        if (_nibbler[c].first == 0 || _nibbler[c].first == 30 || _nibbler[c].second == 1 || _nibbler[c].second == 31) { // add check all walls
-            r = rand() % 2;
-            if (r == 0) {
-                 _direction = 1;
-                _movedOnce = false;
-            } else {
-                 _direction = 3;
-                _movedOnce = false;
-            }
-        } else {
-            _map.setBlock(_nibbler[c].first, _nibbler[c].second, *_blocks[0].get());
-            for (std::size_t c2 = c + 1; c2 < _nibbler.size(); c2++) {
-                if (_nibbler[c].first == _nibbler[c2].first && _nibbler[c].second == _nibbler[c2].second) {
-                    _setGameOver();
-                }
-            }
+        _map.setBlock(_nibbler[c].first, _nibbler[c].second, *_blocks[0].get());
+        for (std::size_t c2 = c + 1; c2 < _nibbler.size(); c2++) {
+            if (_nibbler[c].first == _nibbler[c2].first && _nibbler[c].second == _nibbler[c2].second) {
+                _setGameOver();
+        }
         }
     }
     if (_nibbler[0].first == _food.first && _nibbler[0].second == _food.second) {

@@ -36,6 +36,8 @@ namespace acd {
             std::pair<int, int> _food;
             std::chrono::time_point<std::chrono::system_clock> _lastUpdate;
             void _setMap();
+            bool _checkCollision();
+            void _changeDirection();
             void _initNibbler();
             void _setGameOver();
     };

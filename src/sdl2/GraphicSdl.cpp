@@ -85,8 +85,8 @@ void acd::graphicSdl::display(GameMap const &map)
             color.g = 255;
             color.b = 255;
         }
-        SDL_Surface* surface = TTF_RenderText_Solid(_font, textBlock.second.get().getText().c_str(), color);
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+        SDL_Surface *surface = TTF_RenderText_Solid(_font, textBlock.second.get().getText().c_str(), color);
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(_renderer, surface);
         SDL_FreeSurface(surface);
         int width, height;
         SDL_QueryTexture(texture, NULL, NULL, &width, &height);
@@ -94,28 +94,32 @@ void acd::graphicSdl::display(GameMap const &map)
         SDL_RenderCopy(_renderer, texture, NULL, &dstrect);
     }
     SDL_RenderPresent(_renderer);
+    // SDL_FreeSurface(backgroundSurface);
+    // SDL_FreeSurface(foregroundSurface);
+    // SDL_DestroyTexture(backgroundTexture);
+    // SDL_DestroyTexture(foregroundTexture);
 }
 
 SDL_Color acd::graphicSdl::getColorToSdlColor(acd::Color color)
 {
     if (color == acd::Color::BLACK || color == acd::Color::LIGHT_BLACK) {
-    return SDL_Color{0, 0, 0, 255}; // Noir en RGB (0, 0, 0) et opacité à 100% (255)
+        return SDL_Color{0, 0, 0, 255};
     } else if (color == acd::Color::RED || color == acd::Color::LIGHT_RED) {
-        return SDL_Color{255, 0, 0, 255}; // Rouge en RGB (255, 0, 0) et opacité à 100% (255)
+        return SDL_Color{255, 0, 0, 255};
     } else if (color == acd::Color::GREEN || color == acd::Color::LIGHT_GREEN) {
-        return SDL_Color{0, 255, 0, 255}; // Vert en RGB (0, 255, 0) et opacité à 100% (255)
+        return SDL_Color{0, 255, 0, 255};
     } else if (color == acd::Color::YELLOW || color == acd::Color::LIGHT_YELLOW) {
-        return SDL_Color{255, 255, 0, 255}; // Jaune en RGB (255, 255, 0) et opacité à 100% (255)
+        return SDL_Color{255, 255, 0, 255};
     } else if (color == acd::Color::BLUE || color == acd::Color::LIGHT_BLUE) {
-        return SDL_Color{0, 0, 255, 255}; // Bleu en RGB (0, 0, 255) et opacité à 100% (255)
+        return SDL_Color{0, 0, 255, 255};
     } else if (color == acd::Color::MAGENTA || color == acd::Color::LIGHT_MAGENTA) {
-        return SDL_Color{255, 0, 255, 255}; // Magenta en RGB (255, 0, 255) et opacité à 100% (255)
+        return SDL_Color{255, 0, 255, 255};
     } else if (color == acd::Color::CYAN || color == acd::Color::LIGHT_CYAN) {
-        return SDL_Color{0, 255, 255, 255}; // Cyan en RGB (0, 255, 255) et opacité à 100% (255)
+        return SDL_Color{0, 255, 255, 255};
     } else if (color == acd::Color::WHITE || color == acd::Color::LIGHT_WHITE) {
-        return SDL_Color{255, 255, 255, 255}; // Blanc en RGB (255, 255, 255) et opacité à 100% (255)
+        return SDL_Color{255, 255, 255, 255};
     } else {
-        return SDL_Color{0, 0, 0, 255}; // Retourne Noir par défaut
+        return SDL_Color{0, 0, 0, 255};
     }
 }
 

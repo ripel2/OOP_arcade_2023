@@ -94,9 +94,10 @@ void acd::Core::_updateLibs(acd::updateType_t update)
             _graphicLibIndex = 0;
         _graphicLib = std::move(_graphicLibs[_graphicLibIndex].second->getInstance());
     } else if (update == acd::updateType_t::PREVGRAPHIC) {
-        _graphicLibIndex--;
-        if (_graphicLibIndex < 0)
+        if (_graphicLibIndex == 0)
             _graphicLibIndex = _graphicLibs.size() - 1;
+        else
+            _graphicLibIndex--;
         _graphicLib = std::move(_graphicLibs[_graphicLibIndex].second->getInstance());
     } else if (update == acd::updateType_t::NEXTGAME) {
         _gameLibIndex++;
@@ -104,9 +105,10 @@ void acd::Core::_updateLibs(acd::updateType_t update)
             _gameLibIndex = 0;
         _gameLib = std::move(_gameLibs[_gameLibIndex].second->getInstance());
     } else if (update == acd::updateType_t::PREVGAME) {
-        _gameLibIndex--;
-        if (_gameLibIndex < 0)
+        if (_gameLibIndex == 0)
             _gameLibIndex = _gameLibs.size() - 1;
+        else
+            _gameLibIndex--;
         _gameLib = std::move(_gameLibs[_gameLibIndex].second->getInstance());
     }
 }
@@ -127,6 +129,8 @@ void acd::Core::startMenu()
         _updateLibs(update);
         _graphicLib->display(menu.getMap());
     }
+    _graphicLibIndex = 0;
+    _gameLibIndex = 0;
     if (menu.isReady()) {
         _isReady = true;
         _username = menu.getUsername();
@@ -141,6 +145,8 @@ void acd::Core::startMenu()
             _graphicLibIndex++;
         }
     }
+    std::cerr<<"libinxdex"<<_graphicLibIndex<<std::endl;
+    std::cerr<<"libinxdex"<<_gameLibIndex<<std::endl;
 }
 
 bool acd::Core::isReady() const

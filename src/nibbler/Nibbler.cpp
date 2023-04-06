@@ -8,7 +8,7 @@
 #include "Nibbler.hpp"
 
 acd::Nibbler::Nibbler()
-    : AGameModule(), _map(31, 32), _isPaused(false), _direction(0), _isGameOver(false),
+    : AGameModule(), _map(31, 32), _isPaused(false), _direction(1), _isGameOver(false),
     _movedOnce(false), _food(0, 0), _lastUpdate(std::chrono::system_clock::now())
 {
     _isPaused = false;

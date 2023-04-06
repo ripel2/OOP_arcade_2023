@@ -145,8 +145,6 @@ void acd::Core::startMenu()
             _graphicLibIndex++;
         }
     }
-    std::cerr<<"libinxdex"<<_graphicLibIndex<<std::endl;
-    std::cerr<<"libinxdex"<<_gameLibIndex<<std::endl;
 }
 
 bool acd::Core::isReady() const

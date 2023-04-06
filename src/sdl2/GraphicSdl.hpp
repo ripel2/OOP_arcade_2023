@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2023
 ** OOP_arcade_2023 [WSL : Ubuntu-20.04]
 ** File description:
-** GraphicSdl
+** graphicSdl
 */
 
 #pragma once
@@ -10,23 +10,24 @@
 #include <SDL2/SDL.h>
 #include <memory>
 #include <iostream>
+#include <SDL2/SDL_ttf.h>
 
 #include "AGraphicModule.hpp"
 #include "Inputs.hpp"
 #include "GameMap.hpp"
 
 namespace acd {
-    class GraphicSdl : public AGraphicModule {
+    class graphicSdl : public AGraphicModule {
         public:
             /**
-             * @brief Construct a new GraphicSdl object
+             * @brief Construct a new graphicSdl object
              */
-            GraphicSdl();
+            graphicSdl();
 
             /**
-             * @brief Destroy the GraphicSdl object
+             * @brief Destroy the graphicSdl object
              */
-            ~GraphicSdl();
+            ~graphicSdl();
 
             /**
              * @brief Display the game
@@ -40,10 +41,12 @@ namespace acd {
             void getInputs() override;
 
         private:
+            void setColorToSdlColor(acd::Color color);
+            SDL_Color getColorToSdlColor(acd::Color color);
             SDL_Window *_window;
             SDL_Renderer *_renderer;
             SDL_Texture *_texture;
             SDL_Event _event;
-
+            TTF_Font *_font;
     };
 }

@@ -8,4 +8,4 @@ set_target_properties(arcade_sdl2 PROPERTIES PREFIX "")
 
 set_target_properties(arcade_sdl2 PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-target_link_libraries(arcade_sdl2 SDL2 SDL2_image)
+target_link_libraries(arcade_sdl2 SDL2 SDL2_image SDL2_ttf)

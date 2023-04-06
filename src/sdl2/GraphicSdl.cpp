@@ -9,13 +9,18 @@
 
 acd::graphicSdl::graphicSdl()
 {
-    TTF_Init();
-
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cerr << "SDL_Init failed load library "<< std::endl;
-        exit(1);
     }
-    _font = TTF_OpenFont("src/assets/arial.ttf", 32);
+    if (TTF_Init() == -1) {
+        std::cerr << "Error initializing TTF: " << TTF_GetError() << std::endl;
+    }
+    if (SDL_RWFromFile("src/assets/arial.ttf", "rb") == nullptr) {
+        std::cerr << "Error loading font file: " << SDL_GetError() << std::endl;
+        exit(84);
+    } else {
+        _font = TTF_OpenFont("src/assets/arial.ttf", 32);
+    }
     _window = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN);
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
 }
@@ -90,14 +95,10 @@ void acd::graphicSdl::display(GameMap const &map)
         SDL_FreeSurface(surface);
         int width, height;
         SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-        SDL_Rect dstrect = { 100, 100, width, height };
+        SDL_Rect dstrect = { (int) pos.second * 64, (int) pos.first * 32, width, height };
         SDL_RenderCopy(_renderer, texture, NULL, &dstrect);
     }
     SDL_RenderPresent(_renderer);
-    // SDL_FreeSurface(backgroundSurface);
-    // SDL_FreeSurface(foregroundSurface);
-    // SDL_DestroyTexture(backgroundTexture);
-    // SDL_DestroyTexture(foregroundTexture);
 }
 
 SDL_Color acd::graphicSdl::getColorToSdlColor(acd::Color color)

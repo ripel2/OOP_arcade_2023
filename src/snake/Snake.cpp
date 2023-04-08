@@ -66,6 +66,21 @@ void acd::Snake::_setGameOver()
 
 acd::updateType_t acd::Snake::update(Input latestInput)
 {
+    char blockchars[2] = {' ', ' '};
+    _blocks[2].get()->loadTexturesNcurses(Color::WHITE, Color::GREEN, blockchars);
+
+    if (latestInput == Input::KEY__RIGHT) {
+        return acd::updateType_t::NEXTGRAPHIC;
+    }
+    if (latestInput == Input::KEY__LEFT) {
+        return acd::updateType_t::PREVGRAPHIC;
+    }
+    if (latestInput == Input::KEY__UP) {
+        return acd::updateType_t::NEXTGAME;
+    }
+    if (latestInput == Input::KEY__DOWN) {
+        return acd::updateType_t::PREVGAME;
+    }
     if (latestInput == Input::KEY__P) {
         _isPaused = !_isPaused;
     }
@@ -141,7 +156,9 @@ acd::updateType_t acd::Snake::update(Input latestInput)
     if (_snake[0].first == _food.first && _snake[0].second == _food.second) {
         _snake.push_back(std::pair<int, int>(_snake[_snake.size() - 1].first, _snake[_snake.size() - 1].second));
         _map.removeBlock(_food.first, _food.second);
-        _food = std::pair<int, int>(rand() % 29 + 1, rand() % 29 + 2);
+        do {
+            _food = std::pair<int, int>(rand() % 28 + 2, rand() % 28 + 3);
+        } while (_snake.end() != std::find(_snake.begin(), _snake.end(), _food));
         _map.setBlock(_food.first, _food.second, *_blocks[2].get());
         setScore(getScore() + 1);
     }

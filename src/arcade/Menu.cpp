@@ -111,24 +111,26 @@ void acd::Menu::arrowDown()
         cursor++;
 }
 
-void acd::Menu::arrowLeft()
+acd::updateType_t acd::Menu::arrowLeft()
 {
     if (!_selectedGraphicLib || !_selectedGameLib)
-        return;
+        return acd::updateType_t::PREVGRAPHIC;
     if (_usernameCursorIndex == 0)
         _usernameCursorIndex = sizeof(_username) - 2;
     else
         _usernameCursorIndex--;
+    return acd::updateType_t::UPDATE_NONE;
 }
 
-void acd::Menu::arrowRight()
+acd::updateType_t acd::Menu::arrowRight()
 {
     if (!_selectedGraphicLib || !_selectedGameLib)
-        return;
+        return acd::updateType_t::NEXTGRAPHIC;
     if (_usernameCursorIndex == sizeof(_username) - 2)
         _usernameCursorIndex = 0;
     else
         _usernameCursorIndex++;
+    return acd::updateType_t::UPDATE_NONE;
 }
 
 void acd::Menu::addCharToUsername(acd::Input latestInput)
@@ -222,6 +224,8 @@ void acd::Menu::updateMap()
 
 acd::updateType_t acd::Menu::update(acd::Input latestInput)
 {
+    acd::updateType_t ret = acd::updateType_t::UPDATE_NONE;
+
     switch (latestInput) {
         case acd::Input::KEY__UP:
             arrowUp();
@@ -230,10 +234,10 @@ acd::updateType_t acd::Menu::update(acd::Input latestInput)
             arrowDown();
             break;
         case acd::Input::KEY__LEFT:
-            arrowLeft();
+            ret = arrowLeft();
             break;
         case acd::Input::KEY__RIGHT:
-            arrowRight();
+            ret = arrowRight();
             break;
         case acd::Input::KEY__ENTER:
             pressEnter();
@@ -270,5 +274,5 @@ acd::updateType_t acd::Menu::update(acd::Input latestInput)
             break;
     }
     updateMap();
-    return acd::updateType_t::UPDATE_NONE;
+    return ret;
 }

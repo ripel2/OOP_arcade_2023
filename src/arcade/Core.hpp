@@ -16,6 +16,7 @@
 #include "IGameModule.hpp"
 #include "DLLoader.hpp"
 #include "Menu.hpp"
+#include "Error.hpp"
 
 namespace acd {
     class Core {
@@ -56,12 +57,14 @@ namespace acd {
             bool isReady() const;
         protected:
         private:
-            std::unique_ptr<DLLoader<IGraphicModule>> _startLib;
-            std::map<std::string, std::unique_ptr<DLLoader<IGraphicModule>>> _graphicLibs;
-            std::map<std::string, std::unique_ptr<DLLoader<IGameModule>>> _gameLibs;
+            std::string _startLibPath;
+            std::vector<std::pair<std::string, std::unique_ptr<DLLoader<IGraphicModule>>>> _graphicLibs;
+            std::vector<std::pair<std::string, std::unique_ptr<DLLoader<IGameModule>>>> _gameLibs;
             bool _isReady;
-            std::string _currentGraphicLib;
-            std::string _currentGameLib;
+            std::size_t _graphicLibIndex;
+            std::unique_ptr<acd::IGraphicModule> _graphicLib;
+            std::size_t _gameLibIndex;
+            std::unique_ptr<acd::IGameModule> _gameLib;
             std::string _username;
             /**
              * @brief Checks if the library is a graphic library and returns its
@@ -77,5 +80,6 @@ namespace acd {
              * @brief Set the menu up
             */
             void setupMenu(acd::Menu &menu);
+            void _updateLibs(acd::updateType_t update);
     };
 }

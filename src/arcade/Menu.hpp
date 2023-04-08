@@ -50,8 +50,8 @@ namespace acd {
             std::vector<std::unique_ptr<TextBlock>> _textBlocks;
             void arrowUp();
             void arrowDown();
-            void arrowLeft();
-            void arrowRight();
+            acd::updateType_t arrowLeft();
+            acd::updateType_t arrowRight();
             void pressEnter();
             void updateMap();
             void addCharToUsername(Input latestInput);

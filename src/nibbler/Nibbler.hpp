@@ -33,7 +33,7 @@ namespace acd {
             int _direction;
             bool _isGameOver;
             bool _movedOnce;
-            std::pair<int, int> _food;
+            std::vector<std::pair<int, int>> _food;
             std::chrono::time_point<std::chrono::system_clock> _lastUpdate;
             void _setMap();
             bool _checkCollision();

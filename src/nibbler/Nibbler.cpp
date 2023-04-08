@@ -9,7 +9,7 @@
 
 acd::Nibbler::Nibbler()
     : AGameModule(), _map(31, 32), _isPaused(false), _direction(1), _isGameOver(false),
-    _movedOnce(false), _food(0, 0), _lastUpdate(std::chrono::system_clock::now())
+    _movedOnce(false), _lastUpdate(std::chrono::system_clock::now())
 {
     _isPaused = false;
     _blocks = std::vector<std::unique_ptr<Block>>();
@@ -84,7 +84,7 @@ void acd::Nibbler::_setMap()
         _map.setBlock(_nibbler[c].first, _nibbler[c].second, *_blocks[0].get());
 
 
-    for (std::size_t a = 0; a < 30; a++) {
+    for (std::size_t a = 0; a < 29; a++) {
         std::size_t rx = rand() % 30;
         std::size_t ry = rand() % 30;
         if (((rx >= 5 && rx <= 10) && (ry >= 5 && ry <= 10)) ||
@@ -95,7 +95,7 @@ void acd::Nibbler::_setMap()
             continue;
         } else {
             _map.setBlock(rx, ry, *_blocks[2].get());
-            _food = std::pair<int, int>(rx, ry);
+            _food.push_back(std::pair<int, int>(rx, ry));
         }
     }
 }
@@ -125,7 +125,7 @@ bool acd::Nibbler::_checkCollision()
     } else if (_direction == 3) {
         x--;
     }
-    if (x == 0 || x == 30 || y == 0 || y == 30)
+    if (x == 0 || x == 30 || y == 1 || y == 31)
         return true;
     if ((x >= 5 && x <= 10) && (y >= 5 && y <= 10))
         return true;
@@ -220,31 +220,15 @@ acd::updateType_t acd::Nibbler::update(acd::Input latestInput)
         _map.removeBlock(_nibbler[c].first, _nibbler[c].second);
     switch (_direction) {
         case 0:
-            if (_checkCollision()) {
-                _changeDirection();
-                break;
-            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first, _nibbler[0].second + 1));
             break;
         case 1:
-            if (_checkCollision()) {
-                _changeDirection();
-                break;
-            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first + 1, _nibbler[0].second));
             break;
         case 2:
-            if (_checkCollision()) {
-                _changeDirection();
-                break;
-            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first, _nibbler[0].second - 1));
             break;
         case 3:
-            if (_checkCollision()) {
-                _changeDirection();
-                break;
-            }
             _nibbler.insert(_nibbler.begin(), std::pair<int, int>(_nibbler[0].first - 1, _nibbler[0].second));
             break;
         default:
@@ -253,17 +237,24 @@ acd::updateType_t acd::Nibbler::update(acd::Input latestInput)
     _nibbler.pop_back();
     _movedOnce = true;
     for (std::size_t c = 0; c < _nibbler.size(); c++) {
-        _map.setBlock(_nibbler[c].first, _nibbler[c].second, *_blocks[0].get());
-        for (std::size_t c2 = c + 1; c2 < _nibbler.size(); c2++) {
-            if (_nibbler[c].first == _nibbler[c2].first && _nibbler[c].second == _nibbler[c2].second) {
-                _setGameOver();
-        }
+        if (_checkCollision())
+            _changeDirection();
+        else {
+            _map.setBlock(_nibbler[c].first, _nibbler[c].second, *_blocks[0].get());
+            for (std::size_t c2 = c + 1; c2 < _nibbler.size(); c2++) {
+                if (_nibbler[c].first == _nibbler[c2].first && _nibbler[c].second == _nibbler[c2].second) {
+                    _setGameOver();
+                }
+            }
         }
     }
-    if (_nibbler[0].first == _food.first && _nibbler[0].second == _food.second) {
-        _nibbler.push_back(std::pair<int, int>(_nibbler[_nibbler.size() - 1].first, _nibbler[_nibbler.size() - 1].second));
-        _map.removeBlock(_food.first, _food.second);
-        setScore(getScore() + 100);
+    for (size_t f = 0; f < 30; f++) {
+        if (_nibbler[0].first == _food[f].first && _nibbler[0].second == _food[f].second) {
+            _nibbler.push_back(std::pair<int, int>(_nibbler[_nibbler.size() - 1].first, _nibbler[_nibbler.size() - 1].second));
+            _map.removeBlock(_food[f].first, _food[f].second);
+            _food.
+            setScore(getScore() + 100);
+        }
     }
     _map.getText("score").setText("Score: " + std::to_string(getScore()));
     setMap(_map);

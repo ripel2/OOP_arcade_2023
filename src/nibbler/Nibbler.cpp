@@ -252,7 +252,7 @@ acd::updateType_t acd::Nibbler::update(acd::Input latestInput)
         if (_nibbler[0].first == _food[f].first && _nibbler[0].second == _food[f].second) {
             _nibbler.push_back(std::pair<int, int>(_nibbler[_nibbler.size() - 1].first, _nibbler[_nibbler.size() - 1].second));
             _map.removeBlock(_food[f].first, _food[f].second);
-            _food.
+            _food.at(f) = std::pair<int, int>(0, 0);
             setScore(getScore() + 100);
         }
     }

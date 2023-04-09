@@ -4,9 +4,9 @@ project(arcade)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(ArcadeShared)
+include_directories(shared)
 
-file(GLOB SRC_SHARED ArcadeShared/*.cpp)
+file(GLOB SRC_SHARED shared/*.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-gnu-unique")
 
